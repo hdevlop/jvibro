@@ -1,0 +1,116 @@
+.backgroundRealTime {
+    background-color: #20282D;
+    width: 100%;
+    height: 100%;
+    
+    .oscillo {}
+    
+    .p5Canvas {
+        width: 82% !important;
+        height: 85% !important;
+        position: absolute;
+        left: 3%;
+        top: 10%;
+        bottom: 5%;
+        z-index: 1;
+    }
+    
+    .content {
+        border-right: 210px solid  #20282D;
+        ;
+        border-left: 40px solid #20282D;
+        border-top: 90px solid #20282D;
+        border-bottom: 10px solid #20282D;
+        // border-image: url(../images/bg1.gif) 20% round;
+        background-color: transparent;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+    
+    }
+    
+    .settings {
+        height: 100%;
+        width: 12%;
+        z-index: 100;
+        right: 20px;
+        position: absolute;
+        top: 100px;
+    
+        .ch {
+            margin-bottom: 30px;
+            border-radius: 15px;
+            height: 20%;
+            width: 100%;
+            box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30),
+                0 15px 12px rgba(0, 0, 0, 0.22);
+    
+            ion-label {
+                font-family: "7seg";
+                font-size: 30px;
+            }
+    
+            ion-toggle {
+                height: 20px;
+                width: 40px;
+            }
+    
+            // ion-toggle.toggle-checked {
+            //     background: red;
+            // }
+    
+            background: #20282D;
+            background: -moz-linear-gradient(top, #20282D 3%, #252E34 51%, #222A30 100%);
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(3%, #20282D), color-stop(51%, #252E34), color-stop(100%, #222A30));
+        }
+    
+        ion-select {
+            width: 100%;
+            display: flex;
+            color: #9fa8b0;
+            font-family: "7seg";
+            font-size: 20px;
+    
+            .select-icon {
+                color: yellow;
+            }
+        }
+    
+        ion-range{
+            padding: 0px !important;
+            --bar-height:10px;
+            --bar-border-radius:15px;
+            --knob-size:30px;
+            z-index: 150;
+        }
+    }
+    
+    /* Dark Button CSS */
+    .button {
+        outline: 0;
+        padding: 5px 12px;
+        display: block;
+        color: #9fa8b0;
+        font-weight: bold;
+        text-shadow: 1px 1px #1f272b;
+        border: 1px solid #1c252b;
+        border-radius: 3px;
+        background: #232B30;
+        background: -webkit-gradient(linear, left top, left bottom, color-stop(3%, #3D4850), color-stop(4%, #313d45), color-stop(100%, #232B30));
+        box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+    }
+    
+    .button:hover {
+        color: #fff;
+    }
+    
+    .button:active {
+        background-position: 0 top;
+        position: relative;
+        top: 1px;
+        color: #fff;
+        padding: 6px 12px 4px;
+        background: #20282D;
+        box-shadow: 1px 1px 1px rgba(255, 255, 255, 0.1);
+    }
+}

@@ -1,0 +1,7 @@
+.js-plotly-plot .plotly .main-svg {
+    position: absolute;
+    top: 0px;
+    left: 50%;
+    transform: translateX(-30%);
+    pointer-events: none;
+}

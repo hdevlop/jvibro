@@ -1,0 +1,129 @@
+.modal-wrapper {
+    height: 200px !important;
+    --background: none !important;
+    --border-radius: 20px;
+}
+
+.keypad {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: auto;
+    height: 100%;
+}
+
+.content {
+    background: #cccaca;
+    border-radius: 20px;
+    font-family: sans-serif;
+    height: 100%;
+    padding: 0.6rem;
+    width: 100%;
+    display: flex;
+    flex-flow: row;
+    flex-wrap: wrap;
+
+    box-shadow: -10px -10px 30px 4px rgba(154, 203, 255, 0.15),
+        10px 10px 30px 4px rgba(154, 203, 255, 0.15);
+
+    @media (max-width: 992px) {
+        width: 344px;
+    }
+
+    @media (max-width: 572px) {
+        width: 258px;
+        min-width: 258px;
+    }
+
+    div {
+        width: 80px;
+        height: 70px;
+        background: #141515;
+        border-radius: 14px;
+        cursor: pointer;
+        margin: 0.5rem;
+        font-size: 1.4rem;
+        color: #f7f6f6;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: all 250ms ease;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
+        0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+        &:hover {
+            background: #e2e9f2;
+            color: #f03f3f;
+        }
+
+        &:active {
+            background: #c7d7e6;
+        }
+    }
+
+    .b6 {
+        order: 1;
+
+        @media (max-width: 992px) {
+            order: 0;
+        }
+    }
+
+    .b7 {
+        order: 1;
+
+        @media (max-width: 992px) {
+            order: 0;
+        }
+
+        @media (max-width: 572px) {
+            order: 0;
+        }
+    }
+
+    .b8 {
+        order: 1;
+
+        @media (max-width: 572px) {
+            order: 0;
+        }
+    }
+
+    .b9 {
+        order: 1;
+    }
+
+    .b0 {
+        order: 1;
+    }
+
+    .enter {
+        background: #266eff;
+        color: #FFFFFF;
+        font-size: 1rem;
+        order: 1;
+
+        &:hover {
+            background: #0957f4;
+        }
+
+        &:active {
+            background: #004be4;
+        }
+    }
+
+    .clear {
+        background: #fff3cb;
+        color: #474747;
+        font-size: 1rem;
+        order: 3;
+
+        &:hover {
+            background: #ffecae;
+        }
+
+        &:active {
+            background: #fee38b;
+        }
+    }
+}

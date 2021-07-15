@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h2>Balancing Sender</h2>
+    <form id="form" action="">
+      Amplitude: <input id="Amplitude" type="text" name="firstname" />
+      <br />
+      <br />
+      Angle: <input id="Angle" type="text" name="lastname" />
+      <button>Send</button>
+    </form>
+  </body>
+
+  <script src="https://cdn.socket.io/4.1.2/socket.io.min.js"></script>
+
+  <script>
+    var socket = io("http://localhost:4000");
+    var form = document.getElementById("form");
+    var Amplitude = document.getElementById("Amplitude");
+    var Angle     = document.getElementById("Angle");
+
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (Amplitude.value) {
+        socket.emit("balancing", Amplitude.value,Angle.value);
+      }
+    });
+  </script>
+</html>

@@ -1,0 +1,193 @@
+@font-face {
+    font-family: '7seg';
+    src: url("/assets/font/Seven Segment.ttf") format("truetype");
+}
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@200;300;400;500;600&display=swap');
+ion-img {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: -20;
+}
+
+#defaultCanvas0 {
+    width: 420px !important;
+    height: 420px !important;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+}
+
+
+
+.polarGraph {
+    width: 510px;
+    height: 510px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+
+    img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        margin: auto;
+        z-index: -10;
+    }
+}
+
+.sensorProjection {
+    position: relative;
+    height: 65vh;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+    .sensorA {
+        background-color: #1e1e1e;
+        position: relative;
+        display: block;
+        flex: 3;
+        border: 3px solid white;
+        border-radius: 10px;
+        margin: 10px;
+    }
+
+    .no {
+        position: relative;
+        display: block;
+        flex: 1;
+        border: 3px solid white;
+        border-radius: 10px;
+        margin: 10px;
+        width: 180px;
+
+        ion-select {
+            margin: auto;
+            font-size: 40px;
+            font-family: "7seg";
+            color: #545ca7;
+            text-align: center;
+            --placeholder-color: #971e49;
+            --placeholder-opacity: 1;
+        }
+
+        ion-label {
+            text-align: center;
+            font-size: 50px;
+            font-family: "7seg";
+
+        }
+
+        ion-button {
+            font-size: 40px;
+            font-family: '7seg';
+            height: 60px;
+            color: chartreuse;
+            width: 98%;
+            margin-top: 40px;
+        }
+    }
+
+    .sensorB {
+        background-color: #1e1e1e;
+        position: relative;
+        display: block;
+        flex: 3;
+        border: 3px solid white;
+        border-radius: 10px;
+        margin: 10px;
+
+    }
+}
+
+.result {
+    position: relative;
+    width: 100%;
+    display: flex;
+
+    ion-icon {
+        font-size: 50px;
+        margin-right: 10px;
+    }
+
+    .resultL {
+        position: relative;
+        background-color: #1e1e1e;
+        flex: 3;
+        border: 3px solid white;
+        border-radius: 10px;
+        margin: 10px;
+
+        ion-label {
+            font-weight: 30px;
+            font-size: 70px;
+            font-family: "7seg";
+        }
+
+        #defaultCanvas1 {
+            width: 50% !important;
+            height: 100% !important;
+            position: absolute;
+            right: 1%;
+            bottom: 1%;
+            z-index: 1;
+        }
+    }
+
+    .Rpm {
+        background-color: #1e1e1e;
+        flex: 1;
+        border: 3px solid white;
+        border-radius: 10px;
+        margin: 10px;
+
+        ion-item {
+            margin-top: 10px;
+
+            ion-label {
+                text-align: center;
+                font-weight: 30px;
+                font-size: 60px;
+                font-family: "7seg";
+            }
+        }
+    }
+
+    .resultR {
+        background-color: #1e1e1e;
+        flex: 3;
+        border: 3px solid white;
+        border-radius: 10px;
+        margin: 10px;
+
+        ion-label {
+            font-weight: 30px;
+            font-size: 70px;
+            font-family: "7seg";
+        }
+    }
+}
+
+.ModalBalancing{
+    --height: 25%;
+    --width: 25%;
+    --border-radius:15px;
+}
+
+.modal{
+    border-radius:15px;
+    border: 4px solid white;
+    width: 100%;
+    height: 100%;
+    p{
+        font-family: 'Roboto Slab',
+        serif;
+        text-align: center;
+        color: rgb(57, 243, 72);
+        font-size: 30px;
+    }
+}
