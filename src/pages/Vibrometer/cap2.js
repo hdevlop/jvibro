@@ -9,13 +9,17 @@ var Height = window.screen.height - 100;
 let verticalPosCH1 = 0;
 let AmpCH1 = 5;
 let bufferSize = 512;
-
+var Amp = 0;
 var State = false;
 
-socket.on('data2', (c2) => {
+socket.on('cap2', (c2) => {
     // if (State == "START") samplesCap2.push(c2);
     if (State == "START") samplesCap2 = c2;
     if (State == "STOP") samplesCap2 = [];
+});
+
+socket.on('disp2', (amp) => {
+    Amp = amp;
 });
 
 const cap2 = p => {
@@ -25,6 +29,10 @@ const cap2 = p => {
     p.draw = () => {
         p.background(100);
         p.clear();
+
+        p.textSize(32);
+        p.fill("red");
+        p.text('Amplitude Cap2 = ' + Amp, 950, 50);
 
         p.strokeWeight(3);
         p.stroke('red');
@@ -46,6 +54,7 @@ const cap2 = p => {
         if (ArrPos.posCH2) verticalPosCH1 = ArrPos.posCH2;
         if (ArrRange.rangeCH2) AmpCH1 = ArrRange.rangeCH2;
         State = state;
+        if (State == "STOP") samplesCap2 = [];
     }
 };
 

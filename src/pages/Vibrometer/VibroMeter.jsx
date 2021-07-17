@@ -35,25 +35,10 @@ const Home = () => {
     setArrPos2({ ...arrPos2, [e.target.name]: e.target.value });
   };
 
-  const START = () => {
-    setState("START");
-    socket.emit('state', "START");
-  }
-
-  const PAUSE = () => {
-    setState("PAUSE");
-    socket.emit('state', "PAUSE");
-  }
-
-  const STOP = () => {
-    setState("STOP");
-    socket.emit('state', "STOP");
-  }
-
   const STATE = (e) => {
     let state = e.target.innerText;
     setState(state);
-    socket.emit('state', state);
+    socket.emit('stateArd', state);
   }
 
   return (

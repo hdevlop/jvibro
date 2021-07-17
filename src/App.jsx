@@ -45,48 +45,59 @@ import Setting from './pages/Settings/Settings';
 
 import Printer from './pages/Printer/Printer';
 
-const App = () => (
-  <IonApp>
-    <IonReactHashRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route path="/diagram" component={Diagram} exact={true} />
-          <Route path="/vibroMeter" component={VibroMeter} exact={true} />
-          <Route path="/rotorSetup" component={VibroMeter} exact={true} />
-          <Route path="/settings" component={Setting} exact={true} />
-          <Route path="/printer" component={Printer} exact={true} />
-          <Route exact path="/" render={() => <Redirect to="/diagram" />} />
-        </IonRouterOutlet>
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "http://127.0.0.1:4000";
+const socket = socketIOClient(ENDPOINT);
 
-        <IonTabBar slot="top">
-          <IonTabButton tab="Home" href="/Home">
-            <img src={landingPage} alt="" />
-            <span>Home</span>
-          </IonTabButton>
-          <IonTabButton tab="Diagram" href="/diagram">
-            <img src={radar} alt="" />
-            <span>Diagram</span>
-          </IonTabButton>
-          <IonTabButton tab="VibroMeter" href="/vibroMeter">
-            <img src={sound} alt="" />
-            <span>VibroMeter</span>
-          </IonTabButton>
-          <IonTabButton tab="RealTime" href="/realTime">
-            <img src={oscilloscope} alt="" />
-            <span>Real Time</span>
-          </IonTabButton>
-          <IonTabButton tab="Settings" href="/settings">
-            <img src={Settings} alt="" />
-            <span>Settings</span>
-          </IonTabButton>
-          <IonTabButton tab="Printer" href="/printer">
-            <img src={printer} alt="" />
-            <span>Printer</span>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactHashRouter>
-  </IonApp>
-);
+const App = () => {
+
+  const handleTabWillChange = (e) => {
+    socket.emit('state', e.detail.tab)
+    console.log(e.detail.tab);
+  }
+  return (
+    <IonApp>
+      <IonReactHashRouter>
+        <IonTabs onIonTabsWillChange={handleTabWillChange}>
+          <IonRouterOutlet>
+            <Route path="/diagram" component={Diagram} exact={true} />
+            <Route path="/vibroMeter" component={VibroMeter} exact={true} />
+            <Route path="/rotorSetup" component={VibroMeter} exact={true} />
+            <Route path="/settings" component={Setting} exact={true} />
+            <Route path="/printer" component={Printer} exact={true} />
+            <Route exact path="/" render={() => <Redirect to="/diagram" />} />
+          </IonRouterOutlet>
+
+          <IonTabBar slot="top">
+            <IonTabButton tab="Home" href="/Home">
+              <img src={landingPage} alt="" />
+              <span>Home</span>
+            </IonTabButton>
+            <IonTabButton tab="Diagram" href="/diagram">
+              <img src={radar} alt="" />
+              <span>Diagram</span>
+            </IonTabButton>
+            <IonTabButton tab="VibroMeter" href="/vibroMeter">
+              <img src={sound} alt="" />
+              <span>VibroMeter</span>
+            </IonTabButton>
+            <IonTabButton tab="RealTime" href="/realTime">
+              <img src={oscilloscope} alt="" />
+              <span>Real Time</span>
+            </IonTabButton>
+            <IonTabButton tab="Settings" href="/settings">
+              <img src={Settings} alt="" />
+              <span>Settings</span>
+            </IonTabButton>
+            <IonTabButton tab="Printer" href="/printer">
+              <img src={printer} alt="" />
+              <span>Printer</span>
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+      </IonReactHashRouter>
+    </IonApp>
+  )
+}
 
 export default App;

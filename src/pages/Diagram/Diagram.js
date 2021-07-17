@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { IonSelectOption, IonSelect, IonIcon, IonLabel, IonModal, IonCard, IonItem, IonButton, IonPage, useIonViewDidLeave } from '@ionic/react';
+import { IonSelectOption, IonSelect, IonIcon, IonLabel, IonModal, IonCard, IonItem, IonButton, IonPage, useIonViewDidLeave, useIonViewWillEnter} from '@ionic/react';
 import polar4 from '../../assets/images/polarCW.png';
 import { pulse, sync } from 'ionicons/icons';
 import './FinalBalancing.scss';
 import P5Wrapper from 'react-p5-wrapper';
 import { P5Plane1, sketch } from './p5Plane1';
+import * as ls from "local-storage";
 
 import socketIOClient from "socket.io-client";
 const ENDPOINT = "http://127.0.0.1:4000";
@@ -25,11 +26,22 @@ const Diagram = () => {
     var [State, setState] = useState("");
 
     var Msg1 = "Install standard part, Measure without adding calibration weight";
-    var Msg2 = "Add Trial of 30 gr Run At 150 Deg ";
+    var Msg2 = `Add Trial of ${ls.get('calibration').Weight_left} gr Run At ${ls.get('calibration').angle_left} Deg `;
 
     var [showModal, setShowModal] = useState(true);
     var [MsgModal, setMsgModal] = useState(Msg1);
 
+
+    useIonViewWillEnter(() => {
+        setShowModal(true);
+        setCountStep(0)
+        socket.emit("arduino", "stop");
+        setStop(true);
+    });
+
+    socket.on('freq', (freq) => {
+        setRPM(freq * 60)
+    });
 
     // ipcRenderer.on('serial', (event, freq, results) => {
     //     var Amp = parseFloat(results[0] / 0.1).toFixed(3);
@@ -62,10 +74,6 @@ const Diagram = () => {
         if (State == "FirstRun") {setMsgModal(Msg2); setShowModal(true)}
     }
 
-    
-    useEffect(() => {
-        // if (State == "TrialRun") setMsgModal(Msg2);
-    }, [State])
     
     useIonViewDidLeave(() => {
         setCountStep(0)

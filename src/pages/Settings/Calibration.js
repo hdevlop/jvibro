@@ -2,7 +2,7 @@ import { IonContent, IonInput, IonSelect, IonButton, useIonViewWillEnter, IonIte
 import React, { useState, useEffect } from "react";
 import './calibration.scss';
 import calibration from '../../assets/images/calibration.png';
-import * as ls from "local-storage";
+import * as ls from "local-storage"; 
 
 const Calibration = () => {
 

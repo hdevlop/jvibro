@@ -1,6 +1,7 @@
 import p5 from 'p5';
 import Roboto from './Seven_Seg.ttf'
 import socketIOClient from "socket.io-client";
+var ls = require('local-storage');
 const ENDPOINT = "http://127.0.0.1:4000";
 const socket = socketIOClient(ENDPOINT);
 
@@ -34,7 +35,7 @@ var magScreen = 0
 var unit = "MILS"
 //=========================================================================//
 //=========================================================================//
-socket.on('balancing', (Amp, ang) => {
+socket.on('balancing1', (Amp, ang) => {
     recv(Amp, ang);
     Aver(Amp, ang);
 });
@@ -62,9 +63,7 @@ const Aver = (A, G) => {
         return arr
     }
 
-    console.log(StateRun);
-
-    if (StateRun == "FirstRun"){
+    if (StateRun == "FirstRun") {
         Mag_O = Averaging(A);
         ang_O = parseInt(Averaging(G) * CW);
 
@@ -76,8 +75,8 @@ const Aver = (A, G) => {
         Mag_OT = Averaging(A);
         ang_OT = parseInt(Averaging(G) * CW);
 
-        angScreen = ang_OT ;
-        magScreen = Mag_OT ;
+        angScreen = ang_OT;
+        magScreen = Mag_OT;
     }
 
 }
@@ -89,6 +88,10 @@ const P5Plane1 = p => {
     p.setup = () => {
         p.createCanvas(width, height);
         p.angleMode(p.DEGREES);
+
+        var data = ls.get('calibration');
+        ang_TW = data.angle_left;
+        Trial_W = data.Weight_left;
         let X0 = width / 2;
         let Y0 = height / 2;
         v0 = p.createVector(X0, Y0);
@@ -102,11 +105,9 @@ const P5Plane1 = p => {
         V_T = p5.Vector.sub(V_O, V_OT);
 
         let AngleBetween = p.degrees(V_O.angleBetween(V_T));
-        ang_CW = parseInt(AngleBetween + ang_TW);
+        ang_CW = Math.round((AngleBetween + ang_TW));   //(AngleBetween + ang_TW).toFixed(1);
+        if (ang_CW > 360) ang_CW = ang_CW - 360;
         Mass_CW = ((V_O.mag() / V_T.mag()) * Trial_W).toFixed(1)
-
-        p.fill("red");
-        p.textSize(20);
 
         drawVec(v0, V_O, "red", ang_O);
         drawVec(v0, V_OT, "yellow", ang_OT);
@@ -153,8 +154,7 @@ const P5Plane1 = p => {
         return (number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ State ,Stop }) => {
-        console.log(State);
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Stop }) => {
         StateRun = State;
         StopB = Stop;
     }

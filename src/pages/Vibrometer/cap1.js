@@ -11,11 +11,21 @@ let AmpCH1 = 5;
 let bufferSize = 512;
 
 var State = false;
+var Freq = 0;
+var Amp = 0;
 
-socket.on('data', (c1) => {
+socket.on('cap1', (c1) => {
     // if (State == "START") samplesCap1.push(c1);
     if (State == "START") samplesCap1 = c1;
     if (State == "STOP") samplesCap1 = [];
+});
+
+socket.on('freq', (freq) => {
+    Freq = freq
+});
+
+socket.on('Amp1', (amp) => {
+    Amp = amp;
 });
 
 const cap1 = p => {
@@ -25,6 +35,14 @@ const cap1 = p => {
     p.draw = () => {
         p.background(100);
         p.clear();
+
+        p.noFill();
+        p.fill("red");
+        p.textSize(32);
+        p.text('Frequency = ' + Freq , 10, 50);
+
+        p.fill("yellow");
+        p.text('Amplitude Cap1 = ' + Amp, 500, 50);
 
         p.strokeWeight(3);
         p.stroke(232, 235, 52);
@@ -46,6 +64,7 @@ const cap1 = p => {
         if (ArrPos.posCH1) verticalPosCH1 = ArrPos.posCH1;
         if (ArrRange.rangeCH1) AmpCH1 = ArrRange.rangeCH1;
         State = state;
+        if (State == "STOP") samplesCap1 = [];
     }
 };
 
