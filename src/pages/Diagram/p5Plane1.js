@@ -1,9 +1,10 @@
 import p5 from 'p5';
 import Roboto from './Seven_Seg.ttf'
-import socketIOClient from "socket.io-client";
 var ls = require('local-storage');
-const ENDPOINT = "http://127.0.0.1:4000";
-const socket = socketIOClient(ENDPOINT);
+const { ipcRenderer } = window.require("electron");
+// import socketIOClient from "socket.io-client";
+// const ENDPOINT = "http://127.0.0.1:4000";
+// const socket = socketIOClient(ENDPOINT);
 
 var CW = -1;
 var count = 0;
@@ -32,10 +33,12 @@ var Mass_CW = 0;
 var angScreen = 0
 var magScreen = 0
 
+var Range = 10;
+
 var unit = "MILS"
 //=========================================================================//
 //=========================================================================//
-socket.on('balancing1', (Amp, ang) => {
+ipcRenderer.on('balancing1', (Amp, ang) => {
     recv(Amp, ang);
     Aver(Amp, ang);
 });
@@ -90,8 +93,12 @@ const P5Plane1 = p => {
         p.angleMode(p.DEGREES);
 
         var data = ls.get('calibration');
-        ang_TW = data.angle_left;
-        Trial_W = data.Weight_left;
+
+        if(data){
+            ang_TW = data.angle_left;
+            Trial_W = data.Weight_left;
+        }
+
         let X0 = width / 2;
         let Y0 = height / 2;
         v0 = p.createVector(X0, Y0);
@@ -138,7 +145,7 @@ const P5Plane1 = p => {
     //=====================================================================//
     var mapNum = (number) => {
         var in_min = 0;
-        var in_max = 10;
+        var in_max = Range;
         var out_min = 0;
         var out_max = 210;
 
@@ -149,14 +156,15 @@ const P5Plane1 = p => {
         var in_min = 0;
         var in_max = 210;
         var out_min = 0;
-        var out_max = 10;
+        var out_max = Range;
 
         return (number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Stop }) => {
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Stop, range }) => {
         StateRun = State;
         StopB = Stop;
+        Range = parseInt(range) ;
     }
 };
 

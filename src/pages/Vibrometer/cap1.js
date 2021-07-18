@@ -1,32 +1,38 @@
-import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4000";
-const socket = socketIOClient(ENDPOINT);
-
+// import socketIOClient from "socket.io-client";
+// const ENDPOINT = "http://127.0.0.1:4000";
+// const socket = socketIOClient(ENDPOINT);
+const { ipcRenderer } = window.require("electron");
 var Width = window.screen.width;
 var Height = window.screen.height - 100;
 
 var samplesCap1 = [];
 let verticalPosCH1 = 0;
 let AmpCH1 = 5;
-let bufferSize = 512;
+let bufferSize = 1024;
 
 var State = false;
 var Freq = 0;
 var Amp = 0;
 
-socket.on('cap1', (c1) => {
-    // if (State == "START") samplesCap1.push(c1);
-    if (State == "START") samplesCap1 = c1;
-    if (State == "STOP") samplesCap1 = [];
-});
+// socket.on('cap1', (c1) => {
+//     // if (State == "START") samplesCap1.push(c1);
+//     if (State == "START") samplesCap1 = c1;
+//     if (State == "STOP") samplesCap1 = [];
+// });
 
-socket.on('freq', (freq) => {
-    Freq = freq
-});
+// socket.on('freq', (freq) => {
+//     Freq = freq
+// });
 
-socket.on('Amp1', (amp) => {
-    Amp = amp;
-});
+// socket.on('Amp1', (amp) => {
+//     Amp = amp;
+// });
+
+ipcRenderer.on('cap1', (event, c1) => {
+    samplesCap1.push(c1);
+    if(State == "start") samplesCap1 = c1;
+    if (State == "stop") samplesCap1 = [];
+})
 
 const cap1 = p => {
     p.setup = () => {
@@ -56,15 +62,15 @@ const cap1 = p => {
         }
         p.endShape();
 
-        if (samplesCap1.length >= p.width) {
-            samplesCap1.splice(0, bufferSize)
+        if (samplesCap1.length >= bufferSize) {
+            samplesCap1 = [];
         }
     }
     p.myCustomRedrawAccordingToNewPropsHandler = ({ ArrRange, ArrPos, state }) => {
         if (ArrPos.posCH1) verticalPosCH1 = ArrPos.posCH1;
         if (ArrRange.rangeCH1) AmpCH1 = ArrRange.rangeCH1;
         State = state;
-        if (State == "STOP") samplesCap1 = [];
+        if (State == "atop") samplesCap1 = [];
     }
 };
 

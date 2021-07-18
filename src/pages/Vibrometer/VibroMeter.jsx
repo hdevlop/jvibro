@@ -6,18 +6,19 @@ import './VibroMeter.scss';
 import P5Wrapper from 'react-p5-wrapper';
 import React, { useState, useEffect } from "react";
 
-import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4000";
-const socket = socketIOClient(ENDPOINT);
+// import socketIOClient from "socket.io-client";
+// const ENDPOINT = "http://127.0.0.1:4000";
+// const socket = socketIOClient(ENDPOINT);
+const { ipcRenderer } = window.require("electron");
 
-const Home = () => {
+const VibroMeter = () => {
   let [arrRange, setarrRange] = useState([]);
   let [arrRange2, setarrRange2] = useState([]);
 
   let [arrPos, setArrPos] = useState([]);
   let [arrPos2, setArrPos2] = useState([]);
 
-  let [State, setState] = useState("STOP");
+  let [State, setState] = useState("stop");
 
   const updateRangeChanged = (e) => {
     setarrRange({ ...arrRange, [e.target.name]: e.target.value });
@@ -38,7 +39,8 @@ const Home = () => {
   const STATE = (e) => {
     let state = e.target.innerText;
     setState(state);
-    socket.emit('stateArd', state);
+    // socket.emit('stateArd', state);
+    ipcRenderer.send('ST_SP', state.toLowerCase());
   }
 
   return (
@@ -157,9 +159,9 @@ const Home = () => {
                 />
               </IonItem>
             </div>
-            <IonButton color="success" value="START" onClick={e => STATE(e)}>Start</IonButton>
-            <IonButton color="warning" value="PAUSE" onClick={e => STATE(e)}>PAUSE</IonButton>
-            <IonButton color="danger " value="STOP"  onClick={e => STATE(e)}>Stop</IonButton>
+            <IonButton color="success" value="start" onClick={e => STATE(e)}>start</IonButton>
+            <IonButton color="warning" value="pause" onClick={e => STATE(e)}>pause</IonButton>
+            <IonButton color="danger " value="stop"  onClick={e => STATE(e)}>stop</IonButton>
           </div>
         </div>
 
@@ -168,4 +170,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default VibroMeter;

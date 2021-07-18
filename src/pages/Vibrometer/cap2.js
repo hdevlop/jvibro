@@ -1,7 +1,7 @@
-import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4000";
-const socket = socketIOClient(ENDPOINT);
-
+// import socketIOClient from "socket.io-client";
+// const ENDPOINT = "http://127.0.0.1:4000";
+// const socket = socketIOClient(ENDPOINT);
+const { ipcRenderer } = window.require("electron");
 var samplesCap2 = [];
 
 var Width = window.screen.width;
@@ -12,13 +12,13 @@ let bufferSize = 512;
 var Amp = 0;
 var State = false;
 
-socket.on('cap2', (c2) => {
+ipcRenderer.on('cap2', (c2) => {
     // if (State == "START") samplesCap2.push(c2);
     if (State == "START") samplesCap2 = c2;
     if (State == "STOP") samplesCap2 = [];
 });
 
-socket.on('disp2', (amp) => {
+ipcRenderer.on('disp2', (amp) => {
     Amp = amp;
 });
 

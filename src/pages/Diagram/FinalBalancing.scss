@@ -10,19 +10,21 @@ ion-img {
     z-index: -20;
 }
 
-#defaultCanvas0 {
-    width: 420px !important;
-    height: 420px !important;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1;
-}
 
 
 
 .polarGraph {
+
+    #defaultCanvas0 {
+        width: 420px !important;
+        height: 420px !important;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+    }
+    
     width: 510px;
     height: 510px;
     position: absolute;

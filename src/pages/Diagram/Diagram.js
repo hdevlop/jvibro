@@ -7,18 +7,16 @@ import P5Wrapper from 'react-p5-wrapper';
 import { P5Plane1, sketch } from './p5Plane1';
 import * as ls from "local-storage";
 
-import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4000";
-const socket = socketIOClient(ENDPOINT);
+// import socketIOClient from "socket.io-client";
+// const ENDPOINT = "http://127.0.0.1:4000";
+// const socket = socketIOClient(ENDPOINT);
 
 
-// const { ipcRenderer } = window.require("electron");
+const { ipcRenderer } = window.require("electron");
 
 const Diagram = () => {
-    const [range, setRange] = useState("2g");
+    const [range, setRange] = useState("10M");
     const [RPM, setRPM] = useState(0);
-    const [Amp, setAmp] = useState(0);
-    const [Angle, setAngle] = useState(0);
 
     var [Start, setStart] = useState(false);
     var [Stop, setStop] = useState(true);
@@ -26,8 +24,8 @@ const Diagram = () => {
     var [State, setState] = useState("");
 
     var Msg1 = "Install standard part, Measure without adding calibration weight";
-    var Msg2 = `Add Trial of ${ls.get('calibration').Weight_left} gr Run At ${ls.get('calibration').angle_left} Deg `;
-
+    // var Msg2 = `Add Trial weight of ${ls.get('calibration').Weight_left} gr Run At ${ls.get('calibration').angle_left} Deg `;
+    var Msg2 =""
     var [showModal, setShowModal] = useState(true);
     var [MsgModal, setMsgModal] = useState(Msg1);
 
@@ -35,13 +33,18 @@ const Diagram = () => {
     useIonViewWillEnter(() => {
         setShowModal(true);
         setCountStep(0)
-        socket.emit("arduino", "stop");
+        // socket.emit("arduino", "stop");
+        ipcRenderer.send('ST_SP', "stop");
         setStop(true);
     });
 
-    socket.on('freq', (freq) => {
+    // socket.on('freq', (freq) => {
+    //     setRPM(freq * 60)
+    // });
+
+    ipcRenderer.on('freq', (event, freq) => {
         setRPM(freq * 60)
-    });
+    })
 
     // ipcRenderer.on('serial', (event, freq, results) => {
     //     var Amp = parseFloat(results[0] / 0.1).toFixed(3);
@@ -55,7 +58,8 @@ const Diagram = () => {
     //=======================================================================//
     //============================ Blancing Step ============================//
     const EStart = () => {
-        socket.emit("arduino", "start");
+        // socket.emit("arduino", "start");
+        ipcRenderer.send('ST_SP', "start");
         setStart(true);
         
         if (Stop) {
@@ -69,7 +73,8 @@ const Diagram = () => {
     }
 
     const EStop = () => {
-        socket.emit("arduino", "stop");
+        // socket.emit("arduino", "stop");
+        ipcRenderer.send('ST_SP', "stop");
         setStop(true);
         if (State == "FirstRun") {setMsgModal(Msg2); setShowModal(true)}
     }
@@ -77,7 +82,8 @@ const Diagram = () => {
     
     useIonViewDidLeave(() => {
         setCountStep(0)
-        socket.emit("arduino", "stop");
+        // socket.emit("arduino", "stop");
+        ipcRenderer.send('ST_SP', "stop");
         setStop(true);
     });
     //======================================================================//
@@ -96,7 +102,7 @@ const Diagram = () => {
                 <div className="sensorProjection">
                     {/* ================================================================== */}
                     <div className="sensorA">
-                        <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} State={State} Start={Start} Stop={Stop}/>
+                        <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} range={range} State={State} Start={Start} Stop={Stop}/>
 
                         <div id="polarGraph" className="polarGraph">
                             <img src={polar4} alt="" />
@@ -110,11 +116,13 @@ const Diagram = () => {
                         </IonItem>
                         <IonItem lines='none' color="transparent">
                             <IonSelect value={range} placeholder="Select One" onIonChange={e => setRange(e.detail.value)}>
-                                <IonSelectOption value="1g">1g</IonSelectOption>
-                                <IonSelectOption value="2g">2g</IonSelectOption>
-                                <IonSelectOption value="4g">4g</IonSelectOption>
-                                <IonSelectOption value="8g">8g</IonSelectOption>
-                                <IonSelectOption value="10g">10g</IonSelectOption>
+                                <IonSelectOption value="5M">5M</IonSelectOption>
+                                <IonSelectOption value="10M">10M</IonSelectOption>
+                                <IonSelectOption value="15M">15M</IonSelectOption>
+                                <IonSelectOption value="20M">20M</IonSelectOption>
+                                <IonSelectOption value="50M">50M</IonSelectOption>
+                                <IonSelectOption value="100M">100M</IonSelectOption>
+                                <IonSelectOption value="200M">200M</IonSelectOption>
                             </IonSelect>
                         </IonItem>
                         <IonItem lines='none' color="transparent">

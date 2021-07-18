@@ -44,16 +44,17 @@ import VibroMeter from './pages/Vibrometer/VibroMeter';
 import Setting from './pages/Settings/Settings';
 
 import Printer from './pages/Printer/Printer';
+const { ipcRenderer } = window.require("electron");
 
-import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4000";
-const socket = socketIOClient(ENDPOINT);
+// import socketIOClient from "socket.io-client";
+// const ENDPOINT = "http://127.0.0.1:4000";
+// const socket = socketIOClient(ENDPOINT);
 
 const App = () => {
 
   const handleTabWillChange = (e) => {
-    socket.emit('state', e.detail.tab)
-    console.log(e.detail.tab);
+    // socket.emit('Tabs', e.detail.tab);
+    ipcRenderer.send('Tabs', e.detail.tab)
   }
   return (
     <IonApp>

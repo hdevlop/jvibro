@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { IonSelectOption, IonSelect, IonIcon, IonLabel, IonCard, IonItem, IonButton, IonPage, IonInput } from '@ionic/react';
-
-import socketIOClient from "socket.io-client";
-const ENDPOINT = "http://127.0.0.1:4000";
-const socket = socketIOClient(ENDPOINT);
+const { ipcRenderer } = window.require("electron");
+// import socketIOClient from "socket.io-client";
+// const ENDPOINT = "http://127.0.0.1:4000";
+// const socket = socketIOClient(ENDPOINT);
 
 const Printer = () => {
 
@@ -11,7 +11,7 @@ const Printer = () => {
     const [Mag, setMag] = useState(5.6);
 
     const Send = () => {
-        socket.emit("balancing", Mag, Angle);
+        ipcRenderer.send("balancing1", Mag, Angle);
     }
 
 

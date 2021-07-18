@@ -54,11 +54,9 @@ const recDataOneChannel = (data) => {
         if (arrayData.length > 0) {
 
             arrCap1 = arrayData[0].split(",").map((i) => parseFloat((Number(i) * 0.00488 - 2.5).toFixed(3)));
-            arrCap2 = arrayData[1].split(",").map((i) => parseFloat((Number(i) * 0.00488 - 2.5).toFixed(3)));
-            freq = arrayData[2];
-            phase = arrayData[3];
+            freq = arrayData[1];
+            phase = arrayData[2];
             arrCap1.pop();
-            arrCap2.pop();
 
             if (arrCap1.length == bufferSize) {
                 var maxCap1 = Math.max(...arrCap1)
@@ -72,9 +70,6 @@ const recDataOneChannel = (data) => {
                 io.sockets.emit('phase', phase);
 
                 io.sockets.emit('balancing1', disp1, phase);
-
-                io.sockets.emit('cap1', arrCap1);
-                io.sockets.emit('cap2', arrCap2);
             }
         }
     }
