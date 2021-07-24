@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton,IonPage, IonLabel, IonItem, IonSelect, IonSelectOption, IonToggle, IonRange } from '@ionic/react';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonPage, IonLabel, IonItem, IonSelect, IonSelectOption, IonToggle, IonRange } from '@ionic/react';
 import oscilloBack from './oscilloBack';
 import cap1 from './cap1';
 import cap2 from './cap2';
@@ -18,6 +18,8 @@ const VibroMeter = () => {
   let [arrPos, setArrPos] = useState([]);
   let [arrPos2, setArrPos2] = useState([]);
 
+  let [Time, setTime] = useState(1024);
+
   let [State, setState] = useState("stop");
 
   const updateRangeChanged = (e) => {
@@ -36,10 +38,13 @@ const VibroMeter = () => {
     setArrPos2({ ...arrPos2, [e.target.name]: e.target.value });
   };
 
+  const updateTime= (e) => {
+    setTime(e.target.value );
+  };
+
   const STATE = (e) => {
     let state = e.target.innerText;
     setState(state);
-    // socket.emit('stateArd', state);
     ipcRenderer.send('ST_SP', state.toLowerCase());
   }
 
@@ -50,9 +55,11 @@ const VibroMeter = () => {
         <div className="backgroundRealTime">
           <div className="oscillo">
             <P5Wrapper style={{ position: 'absolute' }} sketch={oscilloBack} />
-            <P5Wrapper style={{ position: 'absolute' }} sketch={cap1} ArrRange={arrRange}  ArrPos={arrPos} state={State}/>
-            <P5Wrapper style={{ position: 'absolute' }} sketch={cap2} ArrRange={arrRange2} ArrPos={arrPos2} state={State}/>
+            <P5Wrapper style={{ position: 'absolute' }} sketch={cap1} ArrRange={arrRange} ArrPos={arrPos} state={State} time={Time} />
+            <P5Wrapper style={{ position: 'absolute' }} sketch={cap2} ArrRange={arrRange2} ArrPos={arrPos2} state={State} time={Time}/>
           </div>
+
+          <IonRange snaps={true} pin={true} color="warning" value={Time} name="posTime" min={10} max={2048} step={1} onIonChange={updateTime} />
 
 
           <div className="content"></div>
@@ -161,7 +168,7 @@ const VibroMeter = () => {
             </div>
             <IonButton color="success" value="start" onClick={e => STATE(e)}>start</IonButton>
             <IonButton color="warning" value="pause" onClick={e => STATE(e)}>pause</IonButton>
-            <IonButton color="danger " value="stop"  onClick={e => STATE(e)}>stop</IonButton>
+            <IonButton color="danger " value="stop" onClick={e => STATE(e)}>stop</IonButton>
           </div>
         </div>
 

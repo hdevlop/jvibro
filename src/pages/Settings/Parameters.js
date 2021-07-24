@@ -22,6 +22,10 @@ const Parameters = () => {
         ipcRenderer.send('SendToARDConfig', Data)
     }
 
+    const Close = () => {
+        ipcRenderer.send('close', "close")
+    }
+
     return (
         <div className="settingsP">
             <div className="content">
@@ -123,7 +127,7 @@ const Parameters = () => {
             </div>
             <div className="buttonSave">
                 <IonButton color="medium" onClick={Save}>Save </IonButton>
-                <IonButton color="medium" >Cancel</IonButton>
+                <IonButton color="medium" onClick={Close}>Cancel</IonButton>
             </div>
         </div>
 

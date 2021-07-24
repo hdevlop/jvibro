@@ -1,21 +1,19 @@
-// import socketIOClient from "socket.io-client";
-// const ENDPOINT = "http://127.0.0.1:4000";
-// const socket = socketIOClient(ENDPOINT);
+
 const { ipcRenderer } = window.require("electron");
 var samplesCap2 = [];
 
-var Width = window.screen.width;
-var Height = window.screen.height - 100;
+var Width = 1040;
+var Height = 800;
 let verticalPosCH1 = 0;
 let AmpCH1 = 5;
-let bufferSize = 512;
+let bufferSize = 200;
 var Amp = 0;
 var State = false;
 
-ipcRenderer.on('cap2', (c2) => {
-    // if (State == "START") samplesCap2.push(c2);
-    if (State == "START") samplesCap2 = c2;
-    if (State == "STOP") samplesCap2 = [];
+ipcRenderer.on('cap2', (event, c2) => {
+
+    if (State == "START") samplesCap2.push(c2);
+
 });
 
 ipcRenderer.on('disp2', (amp) => {
@@ -30,10 +28,6 @@ const cap2 = p => {
         p.background(100);
         p.clear();
 
-        p.textSize(32);
-        p.fill("red");
-        p.text('Amplitude Cap2 = ' + Amp, 950, 50);
-
         p.strokeWeight(3);
         p.stroke('red');
         p.noFill();
@@ -46,15 +40,16 @@ const cap2 = p => {
         }
         p.endShape();
 
-        if (samplesCap2.length >= p.width) {
-            samplesCap2.splice(0, bufferSize);
+        if (State == "START" && samplesCap2.length >= bufferSize) {
+            samplesCap2 = [];
         }
     }
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ ArrRange, ArrPos, state }) => {
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ ArrRange, ArrPos, state, time }) => {
         if (ArrPos.posCH2) verticalPosCH1 = ArrPos.posCH2;
         if (ArrRange.rangeCH2) AmpCH1 = ArrRange.rangeCH2;
         State = state;
-        if (State == "STOP") samplesCap2 = [];
+        // if (State == "STOP") samplesCap2 = [];
+        bufferSize = time;
     }
 };
 

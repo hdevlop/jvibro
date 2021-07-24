@@ -3,7 +3,7 @@ const path = require('path')
 const isDev = require('electron-is-dev');
 //====================================================================================//
 //====================================================================================//
-var mainWindow ;
+var mainWindow;
 function createWindow() {
   const win = new BrowserWindow({
     width: 1290,
@@ -68,6 +68,7 @@ var port;
 var parser;
 var portName;
 var Tabs = "";
+var bufferSize = 1024;
 
 const ConfigPort = (PortCOM, baudRate) => {
   port = new SerialPort(PortCOM, { autoOpen: true, baudRate: baudRate });
@@ -90,12 +91,10 @@ const ConfigPort = (PortCOM, baudRate) => {
 //===============================================================================//
 const recDataOneChannel = (data) => {
   if (data.length > 0) {
-    console.log(data);
     if (Tabs == "Diagram") {
       var arrCap1 = data.split(",").map((i) => parseFloat((Number(i) * 0.00488 - 2.5).toFixed(3)));
       arrCap1.pop();
       if (arrCap1.length == bufferSize) {
-          // io.sockets.emit('cap1', arrCap1);
       }
     }
 
@@ -118,13 +117,13 @@ ipcMain.on('SendToARDConfig', (event, arg) => {
 
 ipcMain.on('Tabs', (event, arg) => {
   Tabs = arg;
-  if (arg == "Diagram" && port != undefined) { port.write("S\n");port.write("d\n");}
-  if (arg == "VibroMeter" && port != undefined) { port.write("S\n");port.write("o\n");}
+  if (arg == "Diagram" && port != undefined) { port.write("S\n"); port.write("d\n"); }
+  if (arg == "VibroMeter" && port != undefined) { port.write("S\n"); port.write("o\n"); }
 })
 
 ipcMain.on('ST_SP', (event, arg) => {
-  if (arg == "start" && port != undefined){
-    if (Tabs == "Diagram" ){
+  if (arg == "start" && port != undefined) {
+    if (Tabs == "Diagram") {
       port.write("s\n");
       port.write("d\n");
     }
@@ -132,7 +131,12 @@ ipcMain.on('ST_SP', (event, arg) => {
       port.write("s\n");
       port.write("o\n");
     }
-    
-  }  
+
+  }
   if (arg == "stop" && port != undefined) port.write("S\n");
+})
+
+ipcMain.on('close', (event, arg) => {
+  port.close() ;
+  portName = 0;
 })
