@@ -2,9 +2,7 @@ import p5 from 'p5';
 import Roboto from './Seven_Seg.ttf'
 var ls = require('local-storage');
 const { ipcRenderer } = window.require("electron");
-// import socketIOClient from "socket.io-client";
-// const ENDPOINT = "http://127.0.0.1:4000";
-// const socket = socketIOClient(ENDPOINT);
+
 
 var CW = -1;
 var count = 0;
@@ -42,7 +40,7 @@ ipcRenderer.on('balancing1', (Amp, ang) => {
     recv(Amp, ang);
     Aver(Amp, ang);
 });
-
+ 
 const recv = (Amp, Ang) => {
     // count += 1;
     // AmpArray.push(Amp);

@@ -42,6 +42,7 @@ import oscilloscope from "./assets/images/oscilloscope.svg";
 import Diagram from './pages/Diagram/Diagram';
 import VibroMeter from './pages/Vibrometer/VibroMeter';
 import Setting from './pages/Settings/Settings';
+import Home from './pages/Home/Home.js';
 
 import Printer from './pages/Printer/Printer';
 const { ipcRenderer } = window.require("electron");
@@ -61,6 +62,7 @@ const App = () => {
       <IonReactHashRouter>
         <IonTabs onIonTabsWillChange={handleTabWillChange}>
           <IonRouterOutlet>
+            <Route path="/Home" component={Home} exact={true} />
             <Route path="/diagram" component={Diagram} exact={true} />
             <Route path="/vibroMeter" component={VibroMeter} exact={true} />
             <Route path="/rotorSetup" component={VibroMeter} exact={true} />
