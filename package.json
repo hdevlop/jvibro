@@ -20,6 +20,7 @@
     "@types/react-router-dom": "^5.1.7",
     "app-root-path": "^3.0.0",
     "cross-env": "^7.0.3",
+    "delay": "^5.0.0",
     "electron-is-dev": "^2.0.0",
     "electron-splashscreen": "^1.0.0",
     "fbemitter": "^3.0.0",

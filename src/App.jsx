@@ -7,6 +7,7 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
+  useIonViewWillEnter
 } from '@ionic/react';
 import { IonReactHashRouter } from "@ionic/react-router";
 import { ellipse, square, triangle } from 'ionicons/icons';
@@ -44,17 +45,30 @@ import VibroMeter from './pages/Vibrometer/VibroMeter';
 import Setting from './pages/Settings/Settings';
 import Home from './pages/Home/Home.js';
 
+import * as ls from "local-storage";
 import Printer from './pages/Printer/Printer';
 const { ipcRenderer } = window.require("electron");
 
-// import socketIOClient from "socket.io-client";
-// const ENDPOINT = "http://127.0.0.1:4000";
-// const socket = socketIOClient(ENDPOINT);
 
 const App = () => {
 
+
+  const Data = {
+    "angle_left": 1,
+    "Weight_left": 0,
+    "Radius_left": 0,
+
+    "angle_right": 0,
+    "Weight_right": 0,
+    "Radius_right": 0,
+  };
+
+  useIonViewWillEnter(() => {
+    let stored = ls.get('calibration');
+    if (stored == null) ls.set("calibration", Data);
+  });
+
   const handleTabWillChange = (e) => {
-    // socket.emit('Tabs', e.detail.tab);
     ipcRenderer.send('Tabs', e.detail.tab)
   }
   return (
@@ -68,7 +82,7 @@ const App = () => {
             <Route path="/rotorSetup" component={VibroMeter} exact={true} />
             <Route path="/settings" component={Setting} exact={true} />
             <Route path="/printer" component={Printer} exact={true} />
-            <Route exact path="/" render={() => <Redirect to="/diagram" />} />
+            <Route exact path="/" render={() => <Redirect to="/Home" />} />
           </IonRouterOutlet>
 
           <IonTabBar slot="top">

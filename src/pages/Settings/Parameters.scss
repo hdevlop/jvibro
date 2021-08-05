@@ -44,6 +44,19 @@
         border-radius: 8px !important;
         height: 45px;
 
+        ion-input {
+            padding: 0px !important;
+            color: rgb(38, 38, 38) !important;
+            font-size: 1.4rem !important;
+            font-family: 'Roboto Slab',
+                serif !important;
+
+            input {
+                padding: 5px !important;
+            }
+
+        }
+
     }
 
     .buttonSave {
@@ -57,22 +70,22 @@
         }
     }
 
-        img {
-            position: absolute;
-            top: 110px;
-            right: 100px;
-            width: 500px;
-            height: 400px;
-        }
+    img {
+        position: absolute;
+        top: 110px;
+        right: 100px;
+        width: 500px;
+        height: 400px;
+    }
 
-        h1 {
-            margin-left: 15px;
-            width: 100% !important;
-            font-family: 'Roboto Slab',
-                serif !important;
-            color: rgb(143, 143, 143) !important;
-            font-size: 1.6rem !important;
-            margin-bottom: 20px;
-            text-decoration-line: underline;
-        }
+    h1 {
+        margin-left: 15px;
+        width: 100% !important;
+        font-family: 'Roboto Slab',
+            serif !important;
+        color: rgb(143, 143, 143) !important;
+        font-size: 1.6rem !important;
+        margin-bottom: 20px;
+        text-decoration-line: underline;
+    }
 }

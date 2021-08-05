@@ -9,7 +9,7 @@ var count = 0;
 var AmpArray = [];
 var AngArray = [];
 var StateRun = "";
-var StopB = false;
+var START = false;
 
 var v0;
 var V_O;
@@ -36,21 +36,21 @@ var Range = 10;
 var unit = "MILS"
 //=========================================================================//
 //=========================================================================//
-ipcRenderer.on('balancing1', (Amp, ang) => {
-    recv(Amp, ang);
-    Aver(Amp, ang);
+ipcRenderer.on('bal1', (event, arg) => {
+    var data = arg.split(',');
+    recv(data[1], data[2]);
 });
- 
+
 const recv = (Amp, Ang) => {
-    // count += 1;
-    // AmpArray.push(Amp);
-    // AngArray.push(Ang);
-    // if (count == 5) {
-    //     count = 0;
-    //     Aver(AmpArray, AngArray);
-    //     AmpArray = [];
-    //     AngArray = []
-    // }
+    count += 1;
+    AmpArray.push(Amp);
+    AngArray.push(Ang);
+    if (count >= 1) {
+        count = 0;
+        Aver(AmpArray, AngArray);
+        AmpArray = [];
+        AngArray = []
+    }
 }
 
 const Aver = (A, G) => {
@@ -64,7 +64,7 @@ const Aver = (A, G) => {
         return arr
     }
 
-    if (StateRun == "FirstRun") {
+    if (StateRun == "FirstRun_b1") {
         Mag_O = Averaging(A);
         ang_O = parseInt(Averaging(G) * CW);
 
@@ -72,7 +72,7 @@ const Aver = (A, G) => {
         magScreen = Mag_O;
     }
 
-    if (StateRun == "TrialRun") {
+    if (StateRun == "TrialRun_b1") {
         Mag_OT = Averaging(A);
         ang_OT = parseInt(Averaging(G) * CW);
 
@@ -80,29 +80,38 @@ const Aver = (A, G) => {
         magScreen = Mag_OT;
     }
 
+    if (StateRun == "LastRun_b1") {
+        Mag_O = Averaging(A);
+        ang_O = parseInt(Averaging(G) * CW);
+
+        angScreen = ang_O;
+        magScreen = Mag_O;
+        unit = "MILS"
+    }
+
 }
 //=========================================================================//
 //=========================================================================//
 const P5Plane1 = p => {
-    var width = 420;
-    var height = 420;
+    var width = 510;
+    var height = 510;
     p.setup = () => {
         p.createCanvas(width, height);
         p.angleMode(p.DEGREES);
 
-        var data = ls.get('calibration');
-
-        if(data){
-            ang_TW = data.angle_left;
-            Trial_W = data.Weight_left;
-        }
-
         let X0 = width / 2;
-        let Y0 = height / 2;
+        let Y0 = height / 2 - 1;
         v0 = p.createVector(X0, Y0);
     };
 
     p.draw = () => {
+
+        var data = ls.get('calibration');
+
+        if (data) {
+            ang_TW = data.angle_left;
+            Trial_W = data.Weight_left;
+        }
         p.clear();
 
         V_O = p5.Vector.fromAngle(p.radians(ang_O), mapNum(Mag_O));
@@ -117,7 +126,7 @@ const P5Plane1 = p => {
         drawVec(v0, V_O, "red", ang_O);
         drawVec(v0, V_OT, "yellow", ang_OT);
 
-        if (StateRun == "TrialRun" && StopB == true) {
+        if (StateRun == "TrialRun_b1" && START == false) {
             angScreen = ang_CW * CW;
             magScreen = Mass_CW;
             unit = "GR"
@@ -159,10 +168,10 @@ const P5Plane1 = p => {
         return (number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Stop, range }) => {
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Start, range }) => {
         StateRun = State;
-        StopB = Stop;
-        Range = parseInt(range) ;
+        START = Start;
+        Range = parseInt(range);
     }
 };
 

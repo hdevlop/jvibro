@@ -92,14 +92,16 @@ const ConfigPort = (PortCOM, baudRate) => {
 const recDataOneChannel = (data) => {
   if (data.length > 0) {
     if (Tabs == "Diagram") {
-      var arrCap1 = data.split(",").map((i) => parseFloat((Number(i) * 0.00488 - 2.5).toFixed(3)));
-      arrCap1.pop();
-      if (arrCap1.length == bufferSize) {
-      }
+      
+      let arrayData = data.split(",");
+      if (arrayData[0] == "freq") mainWindow.webContents.send('freq', arrayData[1]);
+      if (arrayData[0] == "bal1") mainWindow.webContents.send('bal1', data);
+      if (arrayData[0] == "bal2") mainWindow.webContents.send('bal2', data);
+      if (arrayData[0] == "bal1" || arrayData[0] == "bal2") mainWindow.webContents.send('bal', data);
     }
 
     if (Tabs == "VibroMeter") {
-      var arrayData = data.split(",").map((i) => Number(i));
+      let arrayData = data.split(",").map((i) => Number(i));
       Cap1 = parseFloat((arrayData[0] * 0.00488).toFixed(2));
       Cap2 = parseFloat((arrayData[1] * 0.00488).toFixed(2));
       mainWindow.webContents.send('cap1', Cap1);
@@ -110,33 +112,63 @@ const recDataOneChannel = (data) => {
 
 ipcMain.on('SendToARDConfig', (event, arg) => {
   if (portName != arg.PortCOM) ConfigPort(arg.PortCOM, arg.Baudrate);
-  port.write(`${arg.Baudrate},${arg.Freqency},\n`);
+  port.write(`${arg.Baudrate},${arg.Freqency},${arg.RPM},\n`);
   port.write(`S\n`);
 })
 
-
 ipcMain.on('Tabs', (event, arg) => {
   Tabs = arg;
-  if (arg == "Diagram" && port != undefined) { port.write("S\n"); port.write("d\n"); }
-  if (arg == "VibroMeter" && port != undefined) { port.write("S\n"); port.write("o\n"); }
-})
-
-ipcMain.on('ST_SP', (event, arg) => {
-  if (arg == "start" && port != undefined) {
-    if (Tabs == "Diagram") {
-      port.write("s\n");
-      port.write("d\n");
-    }
-    if (Tabs == "VibroMeter") {
-      port.write("s\n");
-      port.write("o\n");
-    }
-
+  if (port != undefined) {
+    port.write("S");
+    port.write("\n");
   }
-  if (arg == "stop" && port != undefined) port.write("S\n");
 })
 
 ipcMain.on('close', (event, arg) => {
   port.close() ;
   portName = 0;
 })
+
+ipcMain.on('balancing', (event, arg) => {
+  if (port != undefined) {
+    port.write(arg);
+    port.write("\n");
+  }
+})
+
+ipcMain.on('byte', (event, arg) => {
+  if (port != undefined) {
+    port.write(arg);
+    port.write("\n");
+  }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ipcMain.on('ST_SP', (event, arg) => {
+//   if (arg == "start" && port != undefined) {
+//     if (Tabs == "Diagram") {
+//       port.write("s\n");
+//       port.write("d\n");
+//     }
+//     if (Tabs == "VibroMeter") {
+//       port.write("s\n");
+//       port.write("o\n");
+//     }
+
+//   }
+//   if (arg == "stop" && port != undefined) port.write("S\n");
+// })

@@ -1,0 +1,28 @@
+.printer {
+    width: 500px;
+    height: 500px;
+    border: solid 4px white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    ion-input {
+        width: 180px;
+    }
+
+    ion-button {
+        width: 200px;
+        height: 60px;
+        font-size: 3rem;
+    }
+
+    ion-toggle {
+        width: 150px;
+        height: 40px;
+        --background: rgb(170, 170, 170);
+        --background-checked: #7a49a5;
+        --handle-width:40px;
+        --handle-height:40px;
+    }
+}

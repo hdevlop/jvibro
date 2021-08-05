@@ -32,7 +32,7 @@ const Calibration = () => {
             "angle_right": calib_Ang_Right,
             "Weight_right": calib_Weight_Right,
             "Radius_right": calib_Radius_Right,
-    };
+        };
         ls.set("calibration", Data);
     }
 

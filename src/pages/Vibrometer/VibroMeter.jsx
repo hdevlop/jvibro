@@ -1,14 +1,10 @@
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButton, IonPage, IonLabel, IonItem, IonSelect, IonSelectOption, IonToggle, IonRange } from '@ionic/react';
+import { IonContent, useIonViewWillEnter, IonButton, IonPage, IonLabel, IonItem, IonSelect, IonSelectOption, IonToggle, IonRange } from '@ionic/react';
 import oscilloBack from './oscilloBack';
 import cap1 from './cap1';
 import cap2 from './cap2';
 import './VibroMeter.scss';
 import P5Wrapper from 'react-p5-wrapper';
-import React, { useState, useEffect } from "react";
-
-// import socketIOClient from "socket.io-client";
-// const ENDPOINT = "http://127.0.0.1:4000";
-// const socket = socketIOClient(ENDPOINT);
+import { useState } from "react";
 const { ipcRenderer } = window.require("electron");
 
 const VibroMeter = () => {
@@ -38,15 +34,21 @@ const VibroMeter = () => {
     setArrPos2({ ...arrPos2, [e.target.name]: e.target.value });
   };
 
-  const updateTime= (e) => {
-    setTime(e.target.value );
+  const updateTime = (e) => {
+    setTime(e.target.value);
   };
 
   const STATE = (e) => {
     let state = e.target.innerText;
     setState(state);
-    ipcRenderer.send('ST_SP', state.toLowerCase());
+    ipcRenderer.send('byte', e.target.getAttribute('value'));
+    ipcRenderer.send('byte', e.target.getAttribute('value'));
   }
+
+  useIonViewWillEnter(() => {
+    ipcRenderer.send('byte', "o\n");
+    ipcRenderer.send('byte', "S\n");
+  });
 
   return (
     <IonPage>
@@ -56,7 +58,7 @@ const VibroMeter = () => {
           <div className="oscillo">
             <P5Wrapper style={{ position: 'absolute' }} sketch={oscilloBack} />
             <P5Wrapper style={{ position: 'absolute' }} sketch={cap1} ArrRange={arrRange} ArrPos={arrPos} state={State} time={Time} />
-            <P5Wrapper style={{ position: 'absolute' }} sketch={cap2} ArrRange={arrRange2} ArrPos={arrPos2} state={State} time={Time}/>
+            <P5Wrapper style={{ position: 'absolute' }} sketch={cap2} ArrRange={arrRange2} ArrPos={arrPos2} state={State} time={Time} />
           </div>
 
           <IonRange snaps={true} pin={true} color="warning" value={Time} name="posTime" min={10} max={2048} step={1} onIonChange={updateTime} />
@@ -166,9 +168,9 @@ const VibroMeter = () => {
                 />
               </IonItem>
             </div>
-            <IonButton color="success" value="start" onClick={e => STATE(e)}>start</IonButton>
-            <IonButton color="warning" value="pause" onClick={e => STATE(e)}>pause</IonButton>
-            <IonButton color="danger " value="stop" onClick={e => STATE(e)}>stop</IonButton>
+            <IonButton color="success" value="s" onClick={e => STATE(e)}>start</IonButton>
+            <IonButton color="warning" value="p" onClick={e => STATE(e)}>pause</IonButton>
+            <IonButton color="danger " value="S" onClick={e => STATE(e)}>stop</IonButton>
           </div>
         </div>
 

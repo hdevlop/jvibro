@@ -1,24 +1,22 @@
-import { IonContent, IonCard, IonPage, IonSegment, IonSelect, IonButton, IonSelectOption, IonSegmentButton, IonLabel, IonItem } from '@ionic/react';
+import { IonContent, IonCard, IonPage, IonSegment, IonSelect, IonButton, IonSelectOption, IonInput, IonItem } from '@ionic/react';
 import React, { useState, useEffect } from "react";
 import './Parameters.scss';
 import reg from '../../assets/images/reg.png';
 const { ipcRenderer } = window.require("electron");
-// import socketIOClient from "socket.io-client";
-// const ENDPOINT = "http://127.0.0.1:4000";
-// const socket = socketIOClient(ENDPOINT);
+
 
 
 const Parameters = () => {
 
     const [Baud, setBaud] = useState(115200);
-    const [COM, setCOM] = useState("COM2");
-    const [Freq, setFreq] = useState(512);
-    const [Samples, setSamples] = useState(512);
+    const [COM, setCOM] = useState("COM3");
+    const [Freq, setFreq] = useState(1024);
+    const [Samples, setSamples] = useState(1024);
     const [Channel, setChannel] = useState(1);
+    const [RPM, setRPM] = useState(600);
 
     const Save = () => {
-        const Data = { Baudrate: Baud, PortCOM: COM, Freqency: Freq, Samples: Samples };
-        // socket.emit('SendToARD', Data);
+        const Data = { Baudrate: Baud, PortCOM: COM, Freqency: Freq, RPM: RPM };
         ipcRenderer.send('SendToARDConfig', Data)
     }
 
@@ -123,6 +121,13 @@ const Parameters = () => {
                             <IonSelectOption value={3}>3 </IonSelectOption>
                         </IonSelect>
                     </IonItem>
+                </IonItem>
+
+                <IonItem lines="none">
+                    <h2 slot="start">RPM</h2>
+                    <div className="boxSelect">
+                        <IonInput type="number" value={RPM} onIonChange={e => setRPM(parseFloat(e.detail.value))}></IonInput>
+                    </div>
                 </IonItem>
             </div>
             <div className="buttonSave">

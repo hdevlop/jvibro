@@ -6,7 +6,7 @@ var Height = 800;
 var samplesCap1 = [];
 let verticalPosCH1 = 0;
 let AmpCH1 = 5;
-let bufferSize = 200;
+let bufferSize = 512;
 
 var State = false;
 var Freq = 0;
@@ -14,7 +14,6 @@ var Amp = 0;
 
 ipcRenderer.on('cap1', (event, c1) => {
     if (State == "START") samplesCap1.push(c1);
-
 })
 
 const cap1 = p => {
@@ -25,7 +24,7 @@ const cap1 = p => {
         p.background(100);
         p.clear();
 
-        p.strokeWeight(3);
+        p.strokeWeight(2);
         p.stroke(232, 235, 52);
         p.noFill();
 
@@ -45,7 +44,7 @@ const cap1 = p => {
         if (ArrPos.posCH1) verticalPosCH1 = ArrPos.posCH1;
         if (ArrRange.rangeCH1) AmpCH1 = ArrRange.rangeCH1;
         State = state;
-        // if (State == "STOP") samplesCap1 = [];
+        if (State == "STOP") samplesCap1 = [];
         bufferSize = time;
     }
 };
