@@ -24,7 +24,6 @@ const Diagram = () => {
     var [Start, setStart] = useState(Start);
     var [CountStep, setCountStep] = useState(0);
     var [State, setState] = useState("");
-
     var [count1, setCount1] = useState(0);
 
     var Msg1 = "Step1: Install standard part, Measure without adding calibration weight";
@@ -33,20 +32,13 @@ const Diagram = () => {
 
     var [showModal, setShowModal] = useState(false);
     var [ModalAverage, setModalAverage] = useState(false);
+    var [ModalCalib, setModalCalib] = useState(false);
 
     var [MsgModal, setMsgModal] = useState(Msg1);
 
-    var [led1_b1, setLed1_b1] = useState(false);
-    var [led2_b1, setLed2_b1] = useState(false);
-    var [led3_b1, setLed3_b1] = useState(false);
-
-    var [led1_b2, setLed1_b2] = useState(false);
-    var [led2_b2, setLed2_b2] = useState(false);
-    var [led3_b2, setLed3_b2] = useState(false);
-
     var [add, setadd] = useState(ls.get('add'));
     var [init, setInit] = useState(ls.get('init'));
-    var [average, setAverage] = useState(1);
+    var [average, setAverage] = useState(ls.get('AVG'));
     var [selected, setSelected] = useState(ls.get('plane'));
 
     const [Leds, setLeds] = useState({});
@@ -60,13 +52,12 @@ const Diagram = () => {
             ipcRenderer.send('byte', "b");
         }
     });
-    useEffect(() => {
-        console.log(Leds.Led1_b1);
-    }, [Leds])
 
     //=======================================================================//
     //============================ Blancing Step ============================//
     const EStart = () => {
+        ipcRenderer.send('byte', "S");
+        ipcRenderer.send('byte', "S");
         ipcRenderer.removeAllListeners('bal');
         setStart(true);
         if (CountStep == 0) {
@@ -88,7 +79,7 @@ const Diagram = () => {
             StateGest("B", "LastRun_b2", "Led3_b2");
         }
         if (CountStep > 5) currentWindow.reload()
-        
+
         ipcRenderer.on('bal', (event, arg) => {
             setModalAverage(true);
             setCount1(count1 += 1);
@@ -103,12 +94,31 @@ const Diagram = () => {
         })
     }
 
-    const StateGest = async(bytes,state,leds) => {
+    const StateGest = async (bytes, state, leds) => {
+        await ipcRenderer.send('byte', "S");
+        await delay(200);
+        setModalCalib(true)
+        await ipcRenderer.send('byte', 'c');
+        await delay(2000);
         await ipcRenderer.send('byte', bytes);
-        setLeds({ ...Leds, [leds]: true });
-        setState(state);
-        await delay(100);
+        await delay(200);
         await ipcRenderer.send('byte', "s");
+
+        ipcRenderer.on('calib', async (event, arg) => {
+            
+            ipcRenderer.send('byte', "S");
+            ipcRenderer.removeAllListeners('calib');
+
+            await ipcRenderer.send('byte', "d");
+            await delay(3000);
+            await ipcRenderer.send('byte', "s");
+
+            setLeds({ ...Leds, [leds]: true });
+            setState(state);
+            setModalCalib(false)
+        })
+
+
     }
 
     useIonViewDidLeave(() => {
@@ -152,10 +162,16 @@ const Diagram = () => {
                 </div>
             </IonModal>
 
-            <IonModal isOpen={ModalAverage} onDidDismiss={() => setShowModal(false)} cssClass='ModalAverage'>
+            <IonModal isOpen={ModalAverage} onDidDismiss={() => setModalAverage(false)} cssClass='ModalAverage'>
                 <div className="modal">
                     <p>Averaging Data </p>
                     <h1>{count1}</h1>
+                </div>
+            </IonModal>
+
+            <IonModal isOpen={ModalCalib} onDidDismiss={() => setModalCalib(false)} cssClass='ModalCalib'>
+                <div className="modal">
+                    <p>Calibrating Sensor</p>
                 </div>
             </IonModal>
 
@@ -214,7 +230,7 @@ const Diagram = () => {
                         <IonRadioGroup value={selected} onIonChange={e => SelectPlane(e.detail.value)}>
 
                             <IonItem>
-                                <h2>Mix</h2>
+                                <h2>Dual</h2>
                                 <IonRadio slot="start" value="dual" />
                             </IonItem>
 

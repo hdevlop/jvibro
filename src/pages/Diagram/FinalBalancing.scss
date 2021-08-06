@@ -309,11 +309,30 @@ ion-img {
 
         p {
             font-size: 3rem;
+            margin-left: 10px;
         }
 
         h1 {
             margin-left: 80px;
             font-size: 4rem;
+        }
+    }
+}
+
+.ModalCalib {
+    --height: 130px;
+    --width: 500px;
+    --border-radius: 15px;
+    --background: #d5d5d5;
+
+    .modal {
+        background: #3d0404;
+        display: flex;
+        align-items: center;
+
+        p {
+            font-size: 3rem;
+            margin-left: 20px;
         }
     }
 }

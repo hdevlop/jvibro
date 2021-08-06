@@ -2,27 +2,64 @@ import { IonContent, IonCard, IonPage, IonSegment, IonSelect, IonButton, IonSele
 import React, { useState, useEffect } from "react";
 import './Parameters.scss';
 import reg from '../../assets/images/reg.png';
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import * as ls from "local-storage";
+const MySwal = withReactContent(Swal)
 const { ipcRenderer } = window.require("electron");
-
+const delay = require('delay');
 
 
 const Parameters = () => {
 
     const [Baud, setBaud] = useState(115200);
-    const [COM, setCOM] = useState("COM3");
+    const [COM, setCOM] = useState("COM2");
     const [Freq, setFreq] = useState(1024);
     const [Samples, setSamples] = useState(1024);
     const [Channel, setChannel] = useState(1);
     const [RPM, setRPM] = useState(600);
+    const [AVG, setAVG] = useState(5);
 
-    const Save = () => {
+    const Save = async () => {
+        var comm = false
         const Data = { Baudrate: Baud, PortCOM: COM, Freqency: Freq, RPM: RPM };
-        ipcRenderer.send('SendToARDConfig', Data)
+        await ipcRenderer.send('SendToARDConfig', Data);
+        await delay(2000);
+        await ipcRenderer.send('SendToARDConfig', Data);
+
+        ipcRenderer.on('communication', (event, arg) => {
+            if (arg === 'ardok') {
+                comm = true;
+                MySwal.fire({
+                    position: 'top-center',
+                    icon: 'success',
+                    title: 'Board has been successfully connected',
+                    showConfirmButton: false,
+                    timer: 2000
+                })
+            }
+            ipcRenderer.removeAllListeners('communication');
+            ls.set("AVG", AVG);
+        })
+
+        setTimeout(function () {
+            if (!comm)
+                MySwal.fire({
+                    position: 'top-center',
+                    icon: 'error',
+                    title: 'Board Not connected',
+                    showConfirmButton: false,
+                    timer: 1500
+                })
+        }, 3000);
+
     }
 
     const Close = () => {
         ipcRenderer.send('close', "close")
     }
+
+
 
     return (
         <div className="settingsP">
@@ -129,9 +166,31 @@ const Parameters = () => {
                         <IonInput type="number" value={RPM} onIonChange={e => setRPM(parseFloat(e.detail.value))}></IonInput>
                     </div>
                 </IonItem>
+
+                <IonItem lines="none">
+                    <h2 slot="start">Average</h2>
+                    <IonItem className="boxSelect" lines="none" >
+                        <IonSelect
+                            interface="popover"
+                            onIonChange={e => setAVG(e.detail.value)}
+                            value={AVG}>
+                            <IonSelectOption value={1}>1 </IonSelectOption>
+                            <IonSelectOption value={2}>2 </IonSelectOption>
+                            <IonSelectOption value={3}>3 </IonSelectOption>
+                            <IonSelectOption value={4}>4 </IonSelectOption>
+                            <IonSelectOption value={5}>5 </IonSelectOption>
+                            <IonSelectOption value={6}>6 </IonSelectOption>
+                            <IonSelectOption value={7}>7 </IonSelectOption>
+                            <IonSelectOption value={8}>8 </IonSelectOption>
+                            <IonSelectOption value={9}>9 </IonSelectOption>
+                            <IonSelectOption value={10}>10 </IonSelectOption>
+                        </IonSelect>
+                    </IonItem>
+                </IonItem>
+
             </div>
             <div className="buttonSave">
-                <IonButton color="medium" onClick={Save}>Save </IonButton>
+                <IonButton color="medium" onClick={Save}>Send </IonButton>
                 <IonButton color="medium" onClick={Close}>Cancel</IonButton>
             </div>
         </div>

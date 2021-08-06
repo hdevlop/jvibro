@@ -91,13 +91,16 @@ const ConfigPort = (PortCOM, baudRate) => {
 //===============================================================================//
 const recDataOneChannel = (data) => {
   if (data.length > 0) {
+    data = data.replace(/[\n\r]+/g, '');
+    if (data == "ardok") mainWindow.webContents.send('communication', data);
+
     if (Tabs == "Diagram") {
-      
       let arrayData = data.split(",");
       if (arrayData[0] == "freq") mainWindow.webContents.send('freq', arrayData[1]);
       if (arrayData[0] == "bal1") mainWindow.webContents.send('bal1', data);
       if (arrayData[0] == "bal2") mainWindow.webContents.send('bal2', data);
       if (arrayData[0] == "bal1" || arrayData[0] == "bal2") mainWindow.webContents.send('bal', data);
+      if (arrayData[0] == "calib") mainWindow.webContents.send('calib', arrayData[1]);
     }
 
     if (Tabs == "VibroMeter") {

@@ -47,6 +47,7 @@ import Home from './pages/Home/Home.js';
 
 import * as ls from "local-storage";
 import Printer from './pages/Printer/Printer';
+import './app.scss';
 const { ipcRenderer } = window.require("electron");
 
 
