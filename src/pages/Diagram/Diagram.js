@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import { IonSelectOption, IonSelect, IonIcon, IonLabel, IonRadio, IonModal, IonCard, IonRadioGroup, IonItem, IonButton, IonPage, useIonViewDidLeave, useIonViewWillEnter, IonToggle } from '@ionic/react';
+import { useState } from 'react'
+import { IonSelectOption, IonSelect, IonIcon, IonLabel, IonRadio, IonModal, IonCard, IonRadioGroup, IonItem, IonButton, IonPage, useIonViewDidLeave, useIonViewWillEnter } from '@ionic/react';
 import polar4 from '../../assets/images/polarCW.png';
 import { pulse, sync } from 'ionicons/icons';
 import './FinalBalancing.scss';
@@ -21,11 +21,12 @@ const Diagram = () => {
     const [range, setRange] = useState("10M");
     const [RPM, setRPM] = useState(0);
 
+    
     var [Start, setStart] = useState(Start);
     var [CountStep, setCountStep] = useState(0);
     var [State, setState] = useState("");
     var [count1, setCount1] = useState(0);
-
+    
     var Msg1 = "Step1: Install standard part, Measure without adding calibration weight";
     var Msg2 = `Step2: In Plan1 Add Trial weight of ${ls.get('calibration').Weight_left} gr Run At ${ls.get('calibration').angle_left} Deg `;
     var Msg2 = `Step3: In Plan2 Add Trial weight of ${ls.get('calibration').Weight_right} gr Run At ${ls.get('calibration').angle_right} Deg `;
@@ -38,11 +39,12 @@ const Diagram = () => {
 
     var [add, setadd] = useState(ls.get('add'));
     var [init, setInit] = useState(ls.get('init'));
-    var [average, setAverage] = useState(ls.get('AVG'));
+    var [average,setAverage] = useState(ls.get('AVG'));
     var [selected, setSelected] = useState(ls.get('plane'));
-
-    const [Leds, setLeds] = useState({});
-
+    var [useCalib, setUseCalib] = useState(ls.get('useCalib'));
+    
+    var [Leds, setLeds] = useState({});
+    
     useIonViewWillEnter(() => {
         setCountStep(init);
         if (selected == "P2") {
@@ -51,6 +53,9 @@ const Diagram = () => {
         else {
             ipcRenderer.send('byte', "b");
         }
+
+        setAverage(ls.get('AVG'));
+        setUseCalib(ls.get('useCalib'))
     });
 
     //=======================================================================//
@@ -88,6 +93,7 @@ const Diagram = () => {
                 setCount1(0);
                 setStart(false);
                 ipcRenderer.send('byte', "S");
+                ipcRenderer.send('byte', "S");
                 ipcRenderer.removeAllListeners('bal');
                 setCountStep(CountStep += add);
             }
@@ -95,30 +101,38 @@ const Diagram = () => {
     }
 
     const StateGest = async (bytes, state, leds) => {
-        await ipcRenderer.send('byte', "S");
-        await delay(200);
-        setModalCalib(true)
-        await ipcRenderer.send('byte', 'c');
-        await delay(2000);
+        setModalCalib(useCalib);
         await ipcRenderer.send('byte', bytes);
-        await delay(200);
-        await ipcRenderer.send('byte', "s");
 
-        ipcRenderer.on('calib', async (event, arg) => {
-            
-            ipcRenderer.send('byte', "S");
-            ipcRenderer.removeAllListeners('calib');
-
-            await ipcRenderer.send('byte', "d");
-            await delay(3000);
+        if (useCalib){
+            await ipcRenderer.send('byte', 'c');
+            await delay(2000);
             await ipcRenderer.send('byte', "s");
+        }
 
+
+        if (useCalib){
+            ipcRenderer.on('calib', async (event, arg) => {
+                ipcRenderer.removeAllListeners('calib');
+                ipcRenderer.send('byte', "S");
+                ipcRenderer.send('byte', "S");
+                await delay(100);
+                await ipcRenderer.send('byte', "d");
+                await delay(3000);
+                await ipcRenderer.send('byte', "s");
+                setLeds({ ...Leds, [leds]: true });
+                setState(state);
+                setModalCalib(false)
+            }) 
+        } 
+
+        else {
+            await ipcRenderer.send('byte', "d");
+            await delay(100);
+            await ipcRenderer.send('byte', "s");
             setLeds({ ...Leds, [leds]: true });
             setState(state);
-            setModalCalib(false)
-        })
-
-
+        }
     }
 
     useIonViewDidLeave(() => {

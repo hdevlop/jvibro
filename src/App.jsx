@@ -66,7 +66,12 @@ const App = () => {
 
   useIonViewWillEnter(() => {
     let stored = ls.get('calibration');
-    if (stored == null) ls.set("calibration", Data);
+    if (stored == null) {
+      ls.set("calibration", Data);
+      ls.set("useCalib", true);
+      ls.set("AVG", 5);
+      ls.set("unit", "mils");
+    }
   });
 
   const handleTabWillChange = (e) => {

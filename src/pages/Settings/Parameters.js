@@ -18,7 +18,6 @@ const Parameters = () => {
     const [Samples, setSamples] = useState(1024);
     const [Channel, setChannel] = useState(1);
     const [RPM, setRPM] = useState(600);
-    const [AVG, setAVG] = useState(5);
 
     const Save = async () => {
         var comm = false
@@ -39,9 +38,8 @@ const Parameters = () => {
                 })
             }
             ipcRenderer.removeAllListeners('communication');
-            ls.set("AVG", AVG);
         })
-
+        
         setTimeout(function () {
             if (!comm)
                 MySwal.fire({
@@ -58,8 +56,6 @@ const Parameters = () => {
     const Close = () => {
         ipcRenderer.send('close', "close")
     }
-
-
 
     return (
         <div className="settingsP">
@@ -167,26 +163,6 @@ const Parameters = () => {
                     </div>
                 </IonItem>
 
-                <IonItem lines="none">
-                    <h2 slot="start">Average</h2>
-                    <IonItem className="boxSelect" lines="none" >
-                        <IonSelect
-                            interface="popover"
-                            onIonChange={e => setAVG(e.detail.value)}
-                            value={AVG}>
-                            <IonSelectOption value={1}>1 </IonSelectOption>
-                            <IonSelectOption value={2}>2 </IonSelectOption>
-                            <IonSelectOption value={3}>3 </IonSelectOption>
-                            <IonSelectOption value={4}>4 </IonSelectOption>
-                            <IonSelectOption value={5}>5 </IonSelectOption>
-                            <IonSelectOption value={6}>6 </IonSelectOption>
-                            <IonSelectOption value={7}>7 </IonSelectOption>
-                            <IonSelectOption value={8}>8 </IonSelectOption>
-                            <IonSelectOption value={9}>9 </IonSelectOption>
-                            <IonSelectOption value={10}>10 </IonSelectOption>
-                        </IonSelect>
-                    </IonItem>
-                </IonItem>
 
             </div>
             <div className="buttonSave">

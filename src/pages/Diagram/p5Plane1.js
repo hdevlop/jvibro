@@ -33,23 +33,30 @@ var magScreen = 0
 
 var Range = 10;
 
-var unit = "MILS"
+var AVG = ls.get('AVG');
+var unit = ls.get('unit');
 //=========================================================================//
 //=========================================================================//
 ipcRenderer.on('bal1', (event, arg) => {
+    unit = ls.get('unit');
     var data = arg.split(',');
-    recv(data[1], data[2]);
+    recv(data[1], data[2] * CW);
 });
 
 const recv = (Amp, Ang) => {
-    count += 1;
+    if (unit == "mils") Amp = (Amp / 47).toFixed(2);
     AmpArray.push(Amp);
     AngArray.push(Ang);
-    if (count >= 1) {
+    count += 1;
+    if (count > AVG) {
         count = 0;
         Aver(AmpArray, AngArray);
         AmpArray = [];
-        AngArray = []
+        AngArray = [];
+    }
+    if (count < AVG && count>0){
+        angScreen = Ang;
+        magScreen = Amp;
     }
 }
 
@@ -57,16 +64,17 @@ const Aver = (A, G) => {
     const Averaging = (arr) => {
         var total = 0;
         for (var i = 0; i < arr.length; i++) {
-            total += arr[i];
+            total += parseInt(arr[i],10);
         }
         var avg = total / arr.length;
-
-        return arr
+        if (unit == "mV") avg = avg.toFixed(0)
+        if (unit == "mils") avg = avg.toFixed(1)
+        return avg
     }
 
     if (StateRun == "FirstRun_b1") {
         Mag_O = Averaging(A);
-        ang_O = parseInt(Averaging(G) * CW);
+        ang_O = Averaging(G);
 
         angScreen = ang_O;
         magScreen = Mag_O;
@@ -74,7 +82,7 @@ const Aver = (A, G) => {
 
     if (StateRun == "TrialRun_b1") {
         Mag_OT = Averaging(A);
-        ang_OT = parseInt(Averaging(G) * CW);
+        ang_OT = Averaging(G) ;
 
         angScreen = ang_OT;
         magScreen = Mag_OT;
@@ -82,11 +90,10 @@ const Aver = (A, G) => {
 
     if (StateRun == "LastRun_b1") {
         Mag_O = Averaging(A);
-        ang_O = parseInt(Averaging(G) * CW);
+        ang_O = Averaging(G) ;
 
         angScreen = ang_O;
         magScreen = Mag_O;
-        unit = "MILS"
     }
 
 }
@@ -105,7 +112,7 @@ const P5Plane1 = p => {
     };
 
     p.draw = () => {
-
+        AVG = ls.get('AVG');
         var data = ls.get('calibration');
 
         if (data) {
@@ -193,12 +200,12 @@ const sketch = (p) => {
         p.fill("white");
         p.textSize(160);
         p.textFont(myFont);
-        p.text(magScreen, 100, 160);
-        p.text(angScreen * CW, 100, 330);
+        p.text(magScreen, 60, 160);
+        p.text(angScreen * CW, 60, 330);
 
         p.textSize(100);
-        p.text(unit, 400, 160);
-        p.text("deg", 400, 330);
+        p.text(unit, 420, 160);
+        p.text("deg", 420, 330);
     };
 };
 
