@@ -104,21 +104,34 @@ ion-img {
         margin: 10px;
         width: 180px;
 
-        .active {
-            color: #f0f0f0;
+        .Next {
+            color: #ff3c3c;
+            --border-color: #ff5151 !important;
+            margin-top: 30px;
+            margin-bottom: 20px;
 
-            --border-color: #f0f0f0 !important;
-
+            &:active {
+                color: #bababa;
+                --border-color: #e1e1e1 !important;
+                transform: scale(0.90);
+            }
         }
 
-        .release {
+        .Start {
             color: #ffe941;
             --border-color: #ffc941 !important;
+            margin-top: 20px;
+            margin-bottom: 10px;
 
+            &:active {
+                color: #bababa;
+                --border-color: #e1e1e1 !important;
+                transform: scale(0.90);
+            }
         }
 
         .led {
-            margin-top: -80px;
+            margin-top: -130px;
             width: 30px;
             height: 30px;
             border: 2px solid #000;
@@ -151,6 +164,8 @@ ion-img {
             --placeholder-opacity: 1;
         }
 
+
+
         ion-label {
             text-align: center;
             font-size: 50px;
@@ -164,8 +179,8 @@ ion-img {
             height: 60px;
             color: chartreuse;
             width: 98%;
-            margin-top: 40px;
-            margin-bottom: 100px;
+            // margin-top: 40px;
+            // margin-bottom: 100px;
         }
 
         ion-item {
@@ -349,5 +364,15 @@ ion-img {
         text-align: center;
         color: rgb(57, 243, 72);
         font-size: 30px;
+    }
+}
+
+.hicham {
+
+    .popover-content {
+        left: 503.094px !important;
+        background-color: rgb(83, 52, 11);
+        border: 3px solid chartreuse;
+        border-radius: 10px;
     }
 }

@@ -20,6 +20,7 @@ const VibroMeter = () => {
 
   const updateRangeChanged = (e) => {
     setarrRange({ ...arrRange, [e.target.name]: e.target.value });
+    ipcRenderer.send('byte', e.target.value);
   };
 
   const updatePosistionChanged = (e) => {
@@ -28,6 +29,7 @@ const VibroMeter = () => {
 
   const updateRangeChanged2 = (e) => {
     setarrRange2({ ...arrRange2, [e.target.name]: e.target.value });
+    ipcRenderer.send('byte', e.target.value);
   };
 
   const updatePosistionChanged2 = (e) => {
@@ -82,10 +84,10 @@ const VibroMeter = () => {
                   placeholder="+5v"
                   onIonChange={updateRangeChanged}
                 >
-                  <IonSelectOption value="5">+ 5v</IonSelectOption>
-                  <IonSelectOption value="2">+ 2v</IonSelectOption>
-                  <IonSelectOption value="1">+ 1v</IonSelectOption>
-                  <IonSelectOption value="0.5">+ 0.5v</IonSelectOption>
+                  <IonSelectOption value="x">+ 10v</IonSelectOption>
+                  <IonSelectOption value="w">+ 5v</IonSelectOption>
+                  <IonSelectOption value="z">+ 1v</IonSelectOption>
+                  <IonSelectOption value="y">+ 0.5v</IonSelectOption>
                 </IonSelect>
               </IonItem>
               <IonItem lines="none" color="transparent">
@@ -116,10 +118,10 @@ const VibroMeter = () => {
                   placeholder="+5v"
                   onIonChange={updateRangeChanged2}
                 >
-                  <IonSelectOption value="5">+ 5v</IonSelectOption>
-                  <IonSelectOption value="2">+ 2v</IonSelectOption>
-                  <IonSelectOption value="1">+ 1v</IonSelectOption>
-                  <IonSelectOption value="0.5">+ 0.5v</IonSelectOption>
+                  <IonSelectOption value="x">+ 5v</IonSelectOption>
+                  <IonSelectOption value="w">+ 2v</IonSelectOption>
+                  <IonSelectOption value="z">+ 1v</IonSelectOption>
+                  <IonSelectOption value="y">+ 0.5v</IonSelectOption>
                 </IonSelect>
               </IonItem>
               <IonItem lines="none" color="transparent">
@@ -150,10 +152,10 @@ const VibroMeter = () => {
                   placeholder="+5v"
                   onIonChange={updateRangeChanged}
                 >
-                  <IonSelectOption value="5">+ 5v</IonSelectOption>
-                  <IonSelectOption value="2">+ 2v</IonSelectOption>
-                  <IonSelectOption value="1">+ 1v</IonSelectOption>
-                  <IonSelectOption value="0.5">+ 0.5v</IonSelectOption>
+                  <IonSelectOption value="X">+ 5v</IonSelectOption>
+                  <IonSelectOption value="W">+ 2v</IonSelectOption>
+                  <IonSelectOption value="Z">+ 1v</IonSelectOption>
+                  <IonSelectOption value="Y">+ 0.5v</IonSelectOption>
                 </IonSelect>
               </IonItem>
               <IonItem lines="none" color="transparent">

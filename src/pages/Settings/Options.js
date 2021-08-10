@@ -15,11 +15,13 @@ const Parameters = () => {
     const [AVG, setAVG] = useState(ls.get("AVG"));
     const [Calibration, setCalibration] = useState(ls.get("useCalib"));
     const [unit, setUnit] = useState(ls.get("unit"));
+    const [Divider, setDivider] = useState(ls.get("Divider"));
 
     const Save =  () => {
         ls.set("AVG", AVG);
         ls.set("useCalib", Calibration);
         ls.set("unit", unit);
+        ls.set("Divider", Divider);
     }
 
     const Close = () => {
@@ -35,25 +37,9 @@ const Parameters = () => {
 
                 <IonItem lines="none">
                     <h2 slot="start">Average</h2>
-                    <IonItem className="boxSelect" lines="none" >
-                        <IonSelect
-                            interface="popover"
-                            onIonChange={e => setAVG(e.detail.value)}
-                            value={AVG}>
-                            <IonSelectOption value={1}>1 </IonSelectOption>
-                            <IonSelectOption value={2}>2 </IonSelectOption>
-                            <IonSelectOption value={3}>3 </IonSelectOption>
-                            <IonSelectOption value={4}>4 </IonSelectOption>
-                            <IonSelectOption value={5}>5 </IonSelectOption>
-                            <IonSelectOption value={6}>6 </IonSelectOption>
-                            <IonSelectOption value={7}>7 </IonSelectOption>
-                            <IonSelectOption value={8}>8 </IonSelectOption>
-                            <IonSelectOption value={9}>9 </IonSelectOption>
-                            <IonSelectOption value={10}>10 </IonSelectOption>
-                            <IonSelectOption value={11}>11 </IonSelectOption>
-                            <IonSelectOption value={12}>12 </IonSelectOption>
-                        </IonSelect>
-                    </IonItem>
+                    <div className="boxSelect">
+                        <IonInput type="number" value={AVG} onIonChange={e => setAVG(parseInt(e.detail.value))}></IonInput>
+                    </div>
                 </IonItem>
 
                 <IonItem lines="none">
@@ -81,6 +67,14 @@ const Parameters = () => {
                             <IonSelectOption value={"um"}>um </IonSelectOption>
                         </IonSelect>
                     </IonItem>
+                </IonItem>
+
+
+                <IonItem lines="none">
+                    <h2 slot="start">Divider</h2>
+                    <div className="boxSelect">
+                        <IonInput type="number" value={Divider} onIonChange={e => setDivider(parseFloat(e.detail.value))}></IonInput>
+                    </div>
                 </IonItem>
 
             </div>

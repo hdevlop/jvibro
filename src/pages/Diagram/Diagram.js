@@ -17,12 +17,17 @@ const Diagram = () => {
         setRPM(parseInt(arg * 60));
     });
 
+    const options = {
+        cssClass: 'hicham'
+    };
+
     let currentWindow = remote.getCurrentWindow()
     const [range, setRange] = useState("10M");
     const [RPM, setRPM] = useState(0);
 
     
     var [Start, setStart] = useState(Start);
+    var [Next, setNext] = useState(false);
     var [CountStep, setCountStep] = useState(0);
     var [State, setState] = useState("");
     var [count1, setCount1] = useState(0);
@@ -49,22 +54,52 @@ const Diagram = () => {
         setCountStep(init);
         if (selected == "P2") {
             ipcRenderer.send('byte', "B");
+            setState("FirstRun_b2");
         }
         else {
             ipcRenderer.send('byte', "b");
+            setState("FirstRun_b1");
         }
 
         setAverage(ls.get('AVG'));
-        setUseCalib(ls.get('useCalib'))
+        setUseCalib(ls.get('useCalib'));
+
+
     });
 
     //=======================================================================//
     //============================ Blancing Step ============================//
     const EStart = () => {
+        setNext(false)
         ipcRenderer.send('byte', "S");
         ipcRenderer.send('byte', "S");
         ipcRenderer.removeAllListeners('bal');
         setStart(true);
+        setModalCalib(useCalib);
+
+        if (CountStep == 0) {
+            StateGest("b", "FirstRun_b1", "Led1_b1");
+        }
+
+        ipcRenderer.on('bal', (event, arg) => {
+            setModalCalib(false)
+            setModalAverage(true);
+            setCount1(count1 += 1);
+            if (count1 > average) {
+                setModalAverage(false);
+                setCount1(0);
+                setStart(false);
+                ipcRenderer.send('byte', "S");
+                ipcRenderer.send('byte', "S");
+                ipcRenderer.removeAllListeners('bal');
+            }
+        })
+    }
+
+    const ENext = () => {
+        setNext(true);
+        setCountStep(CountStep += add);
+
         if (CountStep == 0) {
             StateGest("b", "FirstRun_b1", "Led1_b1");
         }
@@ -83,35 +118,19 @@ const Diagram = () => {
         if (CountStep == 5) {
             StateGest("B", "LastRun_b2", "Led3_b2");
         }
-        if (CountStep > 5) currentWindow.reload()
-
-        ipcRenderer.on('bal', (event, arg) => {
-            setModalAverage(true);
-            setCount1(count1 += 1);
-            if (count1 > average) {
-                setModalAverage(false);
-                setCount1(0);
-                setStart(false);
-                ipcRenderer.send('byte', "S");
-                ipcRenderer.send('byte', "S");
-                ipcRenderer.removeAllListeners('bal');
-                setCountStep(CountStep += add);
-            }
-        })
+        if (CountStep > 5) currentWindow.reload();
     }
 
     const StateGest = async (bytes, state, leds) => {
-        setModalCalib(useCalib);
+        setLeds({ ...Leds, [leds]: true });
+        setState(state);
         await ipcRenderer.send('byte', bytes);
 
         if (useCalib){
             await ipcRenderer.send('byte', 'c');
             await delay(2000);
             await ipcRenderer.send('byte', "s");
-        }
 
-
-        if (useCalib){
             ipcRenderer.on('calib', async (event, arg) => {
                 ipcRenderer.removeAllListeners('calib');
                 ipcRenderer.send('byte', "S");
@@ -120,8 +139,6 @@ const Diagram = () => {
                 await ipcRenderer.send('byte', "d");
                 await delay(3000);
                 await ipcRenderer.send('byte', "s");
-                setLeds({ ...Leds, [leds]: true });
-                setState(state);
                 setModalCalib(false)
             }) 
         } 
@@ -130,8 +147,6 @@ const Diagram = () => {
             await ipcRenderer.send('byte', "d");
             await delay(100);
             await ipcRenderer.send('byte', "s");
-            setLeds({ ...Leds, [leds]: true });
-            setState(state);
         }
     }
 
@@ -215,7 +230,7 @@ const Diagram = () => {
 
 
                         <div id="polarGraph" className="polarGraph">
-                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} range={range} State={State} Start={Start} />
+                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} range={range} State={State} Start={Start} set0={Next}/>
                             <img src={polar4} alt="" />
                         </div>
                     </div>
@@ -226,20 +241,28 @@ const Diagram = () => {
                             <IonLabel color="success">Range</IonLabel>
                         </IonItem>
                         <IonItem lines='none' color="transparent">
-                            <IonSelect value={range} placeholder="Select One" onIonChange={e => setRange(e.detail.value)}>
-                                <IonSelectOption value="5M">5M</IonSelectOption>
-                                <IonSelectOption value="10M">10M</IonSelectOption>
-                                <IonSelectOption value="15M">15M</IonSelectOption>
-                                <IonSelectOption value="20M">20M</IonSelectOption>
-                                <IonSelectOption value="50M">50M</IonSelectOption>
-                                <IonSelectOption value="100M">100M</IonSelectOption>
-                                <IonSelectOption value="200M">200M</IonSelectOption>
+                            <IonSelect interface="popover" interfaceOptions={options} value={range} placeholder="Select One" onIonChange={e => setRange(e.detail.value)}>
+                                <IonSelectOption value="0.5">0.5M</IonSelectOption>
+                                <IonSelectOption value="5">5M</IonSelectOption>
+                                <IonSelectOption value="10">10M</IonSelectOption>
+                                <IonSelectOption value="15">15M</IonSelectOption>
+                                <IonSelectOption value="20">20M</IonSelectOption>
+                                <IonSelectOption value="50">50M</IonSelectOption>
+                                <IonSelectOption value="100">100M</IonSelectOption>
+                                <IonSelectOption value="500">500M</IonSelectOption>
+                                <IonSelectOption value="1000">1000M</IonSelectOption>
+                                <IonSelectOption value="2000">2000M</IonSelectOption>
                             </IonSelect>
                         </IonItem>
                         <IonItem lines='none' color="transparent">
-                            <IonButton className={`${Start ? "active" : "release"}`} expand="round" fill="outline" onClick={EStart} >Start</IonButton>
+                            <IonButton className={"Start"}  expand="round" fill="outline" onClick={EStart} >Start</IonButton>
                         </IonItem>
-                        <div className={`led led-${Start ? "active" : "release"}`}></div>
+
+                        <IonItem lines='none' color="transparent">
+                            <IonButton className={"Next"} expand="round" fill="outline" onClick={ENext} >Next</IonButton>
+                        </IonItem>
+
+                        {/* <div className={`led led-${Start ? "active" : "release"}`}></div> */}
 
                         <IonRadioGroup value={selected} onIonChange={e => SelectPlane(e.detail.value)}>
 
@@ -345,4 +368,49 @@ export default Diagram;
 //     ipcRenderer.send('ST_SP', "stop");
 //     setStop(true);
 //     if (State == "FirstRun") {setMsgModal(Msg2); setShowModal(true)}
+// }
+
+
+{/* <IonButton className={`${Start ? "active" : "release"}`} expand="round" fill="outline" onClick={EStart} >Start</IonButton> */}
+
+
+
+// const EStart = () => {
+//     ipcRenderer.send('byte', "S");
+//     ipcRenderer.send('byte', "S");
+//     ipcRenderer.removeAllListeners('bal');
+//     setStart(true);
+//     if (CountStep == 0) {
+//         StateGest("b", "FirstRun_b1", "Led1_b1");
+//     }
+//     if (CountStep == 1) {
+//         StateGest("B", "FirstRun_b2", "Led1_b2");
+//     }
+//     if (CountStep == 2) {
+//         StateGest("b", "TrialRun_b1", "Led2_b1");
+//     }
+//     if (CountStep == 3) {
+//         StateGest("B", "TrialRun_b2", "Led2_b2");
+//     }
+//     if (CountStep == 4) {
+//         StateGest("b", "LastRun_b1", "Led3_b1");
+//     }
+//     if (CountStep == 5) {
+//         StateGest("B", "LastRun_b2", "Led3_b2");
+//     }
+//     if (CountStep > 5) currentWindow.reload()
+
+//     ipcRenderer.on('bal', (event, arg) => {
+//         setModalAverage(true);
+//         setCount1(count1 += 1);
+//         if (count1 > average) {
+//             setModalAverage(false);
+//             setCount1(0);
+//             setStart(false);
+//             ipcRenderer.send('byte', "S");
+//             ipcRenderer.send('byte', "S");
+//             ipcRenderer.removeAllListeners('bal');
+//             setCountStep(CountStep += add);
+//         }
+//     })
 // }

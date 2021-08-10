@@ -3,7 +3,6 @@ import Roboto from './Seven_Seg.ttf'
 var ls = require('local-storage');
 const { ipcRenderer } = window.require("electron");
 
-
 var CW = -1;
 var count = 0;
 var AmpArray = [];
@@ -35,16 +34,23 @@ var Range = 10;
 
 var AVG = ls.get('AVG');
 var unit = ls.get('unit');
+var Divider = ls.get('Divider');
+var data = ls.get('calibration');
+
+var showResult = false;
+var set0 = false;
 //=========================================================================//
 //=========================================================================//
 ipcRenderer.on('bal1', (event, arg) => {
-    unit = ls.get('unit');
-    var data = arg.split(',');
-    recv(data[1], data[2] * CW);
+    if (START){
+        var data = arg.split(',');
+        recv(data[1], data[2] * CW);
+
+    }
 });
 
 const recv = (Amp, Ang) => {
-    if (unit == "mils") Amp = (Amp / 47).toFixed(2);
+    Amp = (Amp / Divider).toFixed(2);
     AmpArray.push(Amp);
     AngArray.push(Ang);
     count += 1;
@@ -54,7 +60,7 @@ const recv = (Amp, Ang) => {
         AmpArray = [];
         AngArray = [];
     }
-    if (count < AVG && count>0){
+    if (count < AVG && count > 0) {
         angScreen = Ang;
         magScreen = Amp;
     }
@@ -64,11 +70,12 @@ const Aver = (A, G) => {
     const Averaging = (arr) => {
         var total = 0;
         for (var i = 0; i < arr.length; i++) {
-            total += parseInt(arr[i],10);
+            total += parseFloat(arr[i], 10);
         }
         var avg = total / arr.length;
         if (unit == "mV") avg = avg.toFixed(0)
-        if (unit == "mils") avg = avg.toFixed(1)
+        if (unit == "mils") avg = avg.toFixed(2);
+        console.log(arr);
         return avg
     }
 
@@ -78,19 +85,20 @@ const Aver = (A, G) => {
 
         angScreen = ang_O;
         magScreen = Mag_O;
+        showResult = false;
     }
 
     if (StateRun == "TrialRun_b1") {
         Mag_OT = Averaging(A);
-        ang_OT = Averaging(G) ;
+        ang_OT = Averaging(G);
 
-        angScreen = ang_OT;
-        magScreen = Mag_OT;
+        showResult = true;
     }
 
     if (StateRun == "LastRun_b1") {
+        showResult = false;
         Mag_O = Averaging(A);
-        ang_O = Averaging(G) ;
+        ang_O = Averaging(G);
 
         angScreen = ang_O;
         magScreen = Mag_O;
@@ -113,7 +121,9 @@ const P5Plane1 = p => {
 
     p.draw = () => {
         AVG = ls.get('AVG');
-        var data = ls.get('calibration');
+        Divider = ls.get('Divider');
+        unit = ls.get('unit');
+        data = ls.get('calibration');
 
         if (data) {
             ang_TW = data.angle_left;
@@ -126,14 +136,14 @@ const P5Plane1 = p => {
         V_T = p5.Vector.sub(V_O, V_OT);
 
         let AngleBetween = p.degrees(V_O.angleBetween(V_T));
-        ang_CW = Math.round((AngleBetween + ang_TW));   //(AngleBetween + ang_TW).toFixed(1);
+        ang_CW = Math.round((AngleBetween + ang_TW));  //(AngleBetween + ang_TW).toFixed(1);
         if (ang_CW > 360) ang_CW = ang_CW - 360;
         Mass_CW = ((V_O.mag() / V_T.mag()) * Trial_W).toFixed(1)
 
         drawVec(v0, V_O, "red", ang_O);
         drawVec(v0, V_OT, "yellow", ang_OT);
 
-        if (StateRun == "TrialRun_b1" && START == false) {
+        if (StateRun == "TrialRun_b1" && START == false && showResult) {
             angScreen = ang_CW * CW;
             magScreen = Mass_CW;
             unit = "GR"
@@ -175,10 +185,14 @@ const P5Plane1 = p => {
         return (number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Start, range }) => {
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Start, range, set0 }) => {
         StateRun = State;
         START = Start;
-        Range = parseInt(range);
+        Range = parseFloat(range);
+        if (set0) {
+            angScreen = 0;
+            magScreen = 0;
+        }
     }
 };
 

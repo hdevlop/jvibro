@@ -46,7 +46,7 @@ const cap2 = p => {
     }
     p.myCustomRedrawAccordingToNewPropsHandler = ({ ArrRange, ArrPos, state, time }) => {
         if (ArrPos.posCH2) verticalPosCH1 = ArrPos.posCH2;
-        if (ArrRange.rangeCH2) AmpCH1 = ArrRange.rangeCH2;
+        // if (ArrRange.rangeCH2) AmpCH1 = ArrRange.rangeCH2;
         State = state;
         // if (State == "STOP") samplesCap2 = [];
         bufferSize = time;
