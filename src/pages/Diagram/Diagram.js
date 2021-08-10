@@ -22,19 +22,19 @@ const Diagram = () => {
     };
 
     let currentWindow = remote.getCurrentWindow()
-    const [range, setRange] = useState("10M");
+    const [range, setRange] = useState("10");
     const [RPM, setRPM] = useState(0);
 
-    
+
     var [Start, setStart] = useState(Start);
     var [Next, setNext] = useState(false);
     var [CountStep, setCountStep] = useState(0);
     var [State, setState] = useState("");
     var [count1, setCount1] = useState(0);
-    
+
     var Msg1 = "Step1: Install standard part, Measure without adding calibration weight";
     var Msg2 = `Step2: In Plan1 Add Trial weight of ${ls.get('calibration').Weight_left} gr Run At ${ls.get('calibration').angle_left} Deg `;
-    var Msg2 = `Step3: In Plan2 Add Trial weight of ${ls.get('calibration').Weight_right} gr Run At ${ls.get('calibration').angle_right} Deg `;
+    var Msg3 = `Step3: In Plan2 Add Trial weight of ${ls.get('calibration').Weight_right} gr Run At ${ls.get('calibration').angle_right} Deg `;
 
     var [showModal, setShowModal] = useState(false);
     var [ModalAverage, setModalAverage] = useState(false);
@@ -44,12 +44,12 @@ const Diagram = () => {
 
     var [add, setadd] = useState(ls.get('add'));
     var [init, setInit] = useState(ls.get('init'));
-    var [average,setAverage] = useState(ls.get('AVG'));
+    var [average, setAverage] = useState(ls.get('AVG'));
     var [selected, setSelected] = useState(ls.get('plane'));
     var [useCalib, setUseCalib] = useState(ls.get('useCalib'));
-    
+
     var [Leds, setLeds] = useState({});
-    
+
     useIonViewWillEnter(() => {
         setCountStep(init);
         if (selected == "P2") {
@@ -64,7 +64,10 @@ const Diagram = () => {
         setAverage(ls.get('AVG'));
         setUseCalib(ls.get('useCalib'));
 
-
+        if (CountStep == 0) {
+            setMsgModal(Msg1);
+            setShowModal(true)
+        }
     });
 
     //=======================================================================//
@@ -76,9 +79,14 @@ const Diagram = () => {
         ipcRenderer.removeAllListeners('bal');
         setStart(true);
         setModalCalib(useCalib);
+        sendBytesStart();
 
         if (CountStep == 0) {
             StateGest("b", "FirstRun_b1", "Led1_b1");
+        }
+
+        if (CountStep == 1) {
+            StateGest("B", "FirstRun_b2", "Led1_b2");
         }
 
         ipcRenderer.on('bal', (event, arg) => {
@@ -95,40 +103,12 @@ const Diagram = () => {
             }
         })
     }
-
-    const ENext = () => {
-        setNext(true);
-        setCountStep(CountStep += add);
-
-        if (CountStep == 0) {
-            StateGest("b", "FirstRun_b1", "Led1_b1");
-        }
-        if (CountStep == 1) {
-            StateGest("B", "FirstRun_b2", "Led1_b2");
-        }
-        if (CountStep == 2) {
-            StateGest("b", "TrialRun_b1", "Led2_b1");
-        }
-        if (CountStep == 3) {
-            StateGest("B", "TrialRun_b2", "Led2_b2");
-        }
-        if (CountStep == 4) {
-            StateGest("b", "LastRun_b1", "Led3_b1");
-        }
-        if (CountStep == 5) {
-            StateGest("B", "LastRun_b2", "Led3_b2");
-        }
-        if (CountStep > 5) currentWindow.reload();
-    }
-
-    const StateGest = async (bytes, state, leds) => {
-        setLeds({ ...Leds, [leds]: true });
-        setState(state);
-        await ipcRenderer.send('byte', bytes);
-
-        if (useCalib){
+    //=============================== send Byte ================================//
+    //==========================================================================//
+    const sendBytesStart = async() => {
+        if (useCalib) {
             await ipcRenderer.send('byte', 'c');
-            await delay(2000);
+            await delay(3000);
             await ipcRenderer.send('byte', "s");
 
             ipcRenderer.on('calib', async (event, arg) => {
@@ -140,14 +120,51 @@ const Diagram = () => {
                 await delay(3000);
                 await ipcRenderer.send('byte', "s");
                 setModalCalib(false)
-            }) 
-        } 
+            })
+        }
 
         else {
             await ipcRenderer.send('byte', "d");
             await delay(100);
             await ipcRenderer.send('byte', "s");
         }
+    }
+
+    //=============================== Next State ===============================//
+    //==========================================================================//
+    const ENext = () => {
+        setNext(true);
+        setCountStep(CountStep += add);
+        setCount1(0);
+        if (CountStep == 0) {
+            StateGest("b","FirstRun_b1", "Led1_b1");
+        }
+        if (CountStep == 1) {
+            StateGest("B","FirstRun_b2", "Led1_b2");
+        }
+        if (CountStep == 2) {
+            StateGest("b","TrialRun_b1", "Led2_b1");
+            setMsgModal(Msg2);
+            setShowModal(true);
+        }
+        if (CountStep == 3) {
+            StateGest("B","TrialRun_b2", "Led2_b2");
+            setMsgModal(Msg3);
+            setShowModal(true);
+        }
+        if (CountStep == 4) {
+            StateGest("b","LastRun_b1", "Led3_b1");
+        }
+        if (CountStep == 5) {
+            StateGest("B","LastRun_b2", "Led3_b2");
+        }
+        if (CountStep > 5) currentWindow.reload();
+    }
+
+    const StateGest = async (bytes,state, leds) => {
+        setLeds({ ...Leds, [leds]: true });
+        setState(state);
+        await ipcRenderer.send('byte', bytes);
     }
 
     useIonViewDidLeave(() => {
@@ -230,7 +247,7 @@ const Diagram = () => {
 
 
                         <div id="polarGraph" className="polarGraph">
-                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} range={range} State={State} Start={Start} set0={Next}/>
+                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} range={range} State={State} Start={Start} set0={Next} />
                             <img src={polar4} alt="" />
                         </div>
                     </div>
@@ -255,7 +272,7 @@ const Diagram = () => {
                             </IonSelect>
                         </IonItem>
                         <IonItem lines='none' color="transparent">
-                            <IonButton className={"Start"}  expand="round" fill="outline" onClick={EStart} >Start</IonButton>
+                            <IonButton className={"Start"} expand="round" fill="outline" onClick={EStart} >Start</IonButton>
                         </IonItem>
 
                         <IonItem lines='none' color="transparent">
@@ -371,7 +388,7 @@ export default Diagram;
 // }
 
 
-{/* <IonButton className={`${Start ? "active" : "release"}`} expand="round" fill="outline" onClick={EStart} >Start</IonButton> */}
+{/* <IonButton className={`${Start ? "active" : "release"}`} expand="round" fill="outline" onClick={EStart} >Start</IonButton> */ }
 
 
 

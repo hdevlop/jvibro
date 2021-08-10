@@ -71,7 +71,7 @@ const App = () => {
       ls.set("useCalib", true);
       ls.set("AVG", 5);
       ls.set("unit", "mils");
-      ls.set("Divider", 45);
+      ls.set("Divider", 1);
     }
   });
 

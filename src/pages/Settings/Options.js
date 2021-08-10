@@ -3,12 +3,10 @@ import React, { useState, useEffect } from "react";
 import './Options.scss';
 import reg from '../../assets/images/reg.png';
 import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 import * as ls from "local-storage";
-const MySwal = withReactContent(Swal)
-const { ipcRenderer } = window.require("electron");
-const delay = require('delay');
 
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal);
 
 const Parameters = () => {
 
@@ -22,6 +20,13 @@ const Parameters = () => {
         ls.set("useCalib", Calibration);
         ls.set("unit", unit);
         ls.set("Divider", Divider);
+        MySwal.fire({
+            position: 'top-center',
+            icon: 'success',
+            title: 'Data Saved successfully',
+            showConfirmButton: false,
+            timer: 2000
+        })
     }
 
     const Close = () => {

@@ -3,6 +3,9 @@ import React, { useState, useEffect } from "react";
 import './calibration.scss';
 import calibration from '../../assets/images/calibration.png';
 import * as ls from "local-storage"; 
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal);
 
 const Calibration = () => {
 
@@ -34,6 +37,13 @@ const Calibration = () => {
             "Radius_right": calib_Radius_Right,
         };
         ls.set("calibration", Data);
+        MySwal.fire({
+            position: 'top-center',
+            icon: 'success',
+            title: 'Data Saved successfully',
+            showConfirmButton: false,
+            timer: 2000
+        })
     }
 
     return (

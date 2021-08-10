@@ -107,8 +107,10 @@ const recDataOneChannel = (data) => {
       let arrayData = data.split(",").map((i) => Number(i));
       Cap1 = parseFloat((arrayData[0] * 0.00488).toFixed(2));
       Cap2 = parseFloat((arrayData[1] * 0.00488).toFixed(2));
+      Cap3 = parseFloat((arrayData[3] * 0.00488).toFixed(2));
       mainWindow.webContents.send('cap1', Cap1);
       mainWindow.webContents.send('cap2', Cap2);
+      mainWindow.webContents.send('cap3', Cap3);
     }
   }
 }

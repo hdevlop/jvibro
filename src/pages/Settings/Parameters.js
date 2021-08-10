@@ -5,7 +5,7 @@ import reg from '../../assets/images/reg.png';
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import * as ls from "local-storage";
-const MySwal = withReactContent(Swal)
+const MySwal = withReactContent(Swal);
 const { ipcRenderer } = window.require("electron");
 const delay = require('delay');
 
