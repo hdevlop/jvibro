@@ -40,7 +40,7 @@ var showResult = false;
 
 //=========================================================================//
 //=========================================================================//
-ipcRenderer.on('bal1', (event, arg) => {
+ipcRenderer.on('bal2', (event, arg) => {
     if (START){
         var data = arg.split(',');
         recv(data[1], data[2] * CW);
@@ -77,7 +77,7 @@ const Aver = (A, G) => {
         return avg
     }
 
-    if (StateRun == "FirstRun_b1") {
+    if (StateRun == "FirstRun_b2") {
         Mag_O = Averaging(A);
         ang_O = Averaging(G);
 
@@ -86,14 +86,14 @@ const Aver = (A, G) => {
         showResult = false;
     }
 
-    if (StateRun == "TrialRun_b1") {
+    if (StateRun == "TrialRun_b2") {
         Mag_OT = Averaging(A);
         ang_OT = Averaging(G);
 
         showResult = true;
     }
 
-    if (StateRun == "LastRun_b1") {
+    if (StateRun == "LastRun_b2") {
         showResult = false;
         Mag_O = Averaging(A);
         ang_O = Averaging(G);
@@ -105,7 +105,7 @@ const Aver = (A, G) => {
 }
 //=========================================================================//
 //=========================================================================//
-const P5Plane1 = p => {
+const P5Plane2 = p => {
     var width = 510;
     var height = 510;
     p.setup = () => {
@@ -141,7 +141,7 @@ const P5Plane1 = p => {
         drawVec(v0, V_O, "red", ang_O);
         drawVec(v0, V_OT, "yellow", ang_OT);
 
-        if (StateRun == "TrialRun_b1" && START == false && showResult) {
+        if (StateRun == "TrialRun_b2" && START == false && showResult) {
             angScreen = ang_CW * CW;
             magScreen = Mass_CW;
             unit = "GR"
@@ -183,18 +183,18 @@ const P5Plane1 = p => {
         return (number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Start, range, set0 }) => {
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Start, range, set1 }) => {
         StateRun = State;
         START = Start;
         Range = parseFloat(range);
-        if (set0) {
+        if (set1) {
             angScreen = 0;
             magScreen = 0;
         }
     }
 };
 
-const sketch = (p) => {
+const sketch2 = (p) => {
     var myFont;
 
     p.setup = () => {
@@ -221,4 +221,4 @@ const sketch = (p) => {
     };
 };
 
-export { P5Plane1, sketch };
+export { P5Plane2, sketch2 };

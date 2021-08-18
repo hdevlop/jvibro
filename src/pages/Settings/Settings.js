@@ -5,7 +5,7 @@ import './settings.scss';
 import Calibration from './Calibration';
 import Parameters from './Parameters';
 import Options from './Options';
-
+import Calculator from './Calculator';
 const Settings = () => {
     const [state, setstate] = useState("Parameters");
 
@@ -23,6 +23,9 @@ const Settings = () => {
                         <IonSegmentButton value="Options">
                             <IonLabel>Options</IonLabel>
                         </IonSegmentButton>
+                        <IonSegmentButton value="Calculator">
+                            <IonLabel>Calculator</IonLabel>
+                        </IonSegmentButton>
                     </IonSegment>
 
 
@@ -30,6 +33,7 @@ const Settings = () => {
                         if (state === "Parameters") return (<Parameters />)
                         if (state === "Calibration") return (<Calibration />)
                         if (state === "Options") return (<Options />)
+                        if (state === "Calculator") return (<Calculator />)
                     })()}
 
 

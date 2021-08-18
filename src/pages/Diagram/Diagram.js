@@ -5,6 +5,7 @@ import { pulse, sync } from 'ionicons/icons';
 import './FinalBalancing.scss';
 import P5Wrapper from 'react-p5-wrapper';
 import { P5Plane1, sketch } from './p5Plane1';
+import { P5Plane2, sketch2 } from './p5Plane2';
 import * as ls from "local-storage";
 
 const { remote, ipcRenderer } = window.require("electron");
@@ -233,7 +234,7 @@ const Diagram = () => {
                                 <IonLabel color="success">S1</IonLabel>
                                 <div className={`led led-${Leds.Led1_b1 ? "active" : "release"}`}></div>
                             </div>
-
+ 
                             <div className="content">
                                 <IonLabel color="success">S2</IonLabel>
                                 <div className={`led led-${Leds.Led2_b1 ? "active" : "release"}`}></div>
@@ -322,7 +323,8 @@ const Diagram = () => {
                                 <div className={`led led-${Leds.Led3_b2 ? "active" : "release"}`}></div>
                             </div>
                         </div>
-                        <div id="polarGraph" className="polarGraph">
+                        <div id="polarGraphB" className="polarGraphB">
+                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane2} range={range} State={State} Start={Start} set1={Next} />
                             <img src={polar4} alt="" />
                         </div>
                     </div>
@@ -335,13 +337,13 @@ const Diagram = () => {
                         <IonCard>
                             <IonItem lines='none' color="transparent">
                                 <IonIcon icon={pulse}></IonIcon>
-                                <IonLabel color="danger">Amp</IonLabel><br />
+                                <IonLabel color="danger">Mag</IonLabel><br />
                                 <IonLabel color="red"> </IonLabel><br />
                             </IonItem>
 
                             <IonItem lines='none' color="transparent">
                                 <IonIcon icon={sync}></IonIcon>
-                                <IonLabel color="danger">Angle</IonLabel><br />
+                                <IonLabel color="danger">Phase</IonLabel><br />
                                 <IonLabel color="red"> </IonLabel><br />
                             </IonItem>
                         </IonCard>
@@ -356,16 +358,17 @@ const Diagram = () => {
                         </IonItem>
                     </div>
                     <div className="resultR">
+                        <P5Wrapper style={{ position: 'absolute' }} sketch={sketch2} />
                         <IonCard>
                             <IonItem lines='none' color="transparent">
                                 <IonIcon icon={pulse}></IonIcon>
-                                <IonLabel color="danger">Amp</IonLabel><br />
+                                <IonLabel color="danger">Mag</IonLabel><br />
                                 <IonLabel color="red"></IonLabel><br />
                             </IonItem>
 
                             <IonItem lines='none' color="transparent">
                                 <IonIcon icon={sync}></IonIcon>
-                                <IonLabel color="danger">Angle</IonLabel><br />
+                                <IonLabel color="danger">Phase</IonLabel><br />
                                 <IonLabel color="red"></IonLabel><br />
                             </IonItem>
                         </IonCard>

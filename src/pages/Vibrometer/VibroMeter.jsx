@@ -10,13 +10,13 @@ const { ipcRenderer } = window.require("electron");
 const delay = require('delay');
 
 const VibroMeter = () => {
-  let [arrRange, setarrRange] = useState([]);
-  let [arrRange2, setarrRange2] = useState([]);
-  let [arrRange3, setarrRange3] = useState([]);
+  let [rangeCH1, setRangeCH1] = useState("w");
+  let [rangeCH2, setRangeCH2] = useState("W");
+  let [rangeCH3, setRangeCH3] = useState("W");
 
-  let [arrPos, setArrPos] = useState([]);
-  let [arrPos2, setArrPos2] = useState([]);
-  let [arrPos3, setArrPos3] = useState([]);
+  let [PosCh1, setPosCh1] = useState();
+  let [PosCh2, setPosCh2] = useState();
+  let [PosCh3, setPosCh3] = useState();
 
   let [Time, setTime] = useState(1024);
 
@@ -27,37 +27,37 @@ const VibroMeter = () => {
   const [checkCap3, setCheckCap3] = useState(false);
 
   const updateRangeChanged = (e) => {
-    setarrRange({ ...arrRange, [e.target.name]: e.target.value });
+    setRangeCH1( e.target.value );
     ipcRenderer.send('byte', e.target.value);
   };
 
   const updatePosistionChanged = (e) => {
-    setArrPos({ ...arrPos, [e.target.name]: e.target.value });
+    setPosCh1(e.target.value );
   };
 
   const updateRangeChanged2 = (e) => {
-    setarrRange2({ ...arrRange2, [e.target.name]: e.target.value });
+    setRangeCH2(e.target.value);
     ipcRenderer.send('byte', e.target.value);
   };
 
   const updatePosistionChanged2 = (e) => {
-    setArrPos2({ ...arrPos2, [e.target.name]: e.target.value });
+    setPosCh2(e.target.value);
   };
 
   const updateRangeChanged3 = (e) => {
-    setarrRange3({ ...arrRange3, [e.target.name]: e.target.value });
+    setRangeCH3(e.target.value);
     ipcRenderer.send('byte', e.target.value);
   };
 
   const updatePosistionChanged3 = (e) => {
-    setArrPos3({ ...arrPos3, [e.target.name]: e.target.value });
+    setPosCh3(e.target.value);
   };
 
   const updateTime = (e) => {
     setTime(e.target.value);
   };
 
-  const STATE = (e) => {
+  const STATE = async(e) => {
     let state = e.target.innerText;
     setState(state);
     ipcRenderer.send('byte', e.target.getAttribute('value'));
@@ -72,14 +72,7 @@ const VibroMeter = () => {
   useEffect(() => {
     
     async function selectChannel() {
-      if (checkCap1) ipcRenderer.send('byte', "h");
-      else ipcRenderer.send('byte', "H");
-      await delay(200);
-      if (checkCap2) ipcRenderer.send('byte', "j");
-      else ipcRenderer.send('byte', "J");
-      await delay(200);
-      if (checkCap3) ipcRenderer.send('byte', "k");
-      else ipcRenderer.send('byte', "K");
+
     }
 
     selectChannel();
@@ -93,9 +86,9 @@ const VibroMeter = () => {
         <div className="backgroundRealTime">
           <div className="oscillo">
             <P5Wrapper style={{ position: 'absolute' }} sketch={oscilloBack} />
-            <P5Wrapper style={{ position: 'absolute' }} sketch={cap1} ArrRange={arrRange} ArrPos={arrPos}   state={State} time={Time} />
-            <P5Wrapper style={{ position: 'absolute' }} sketch={cap2} ArrRange={arrRange2} ArrPos={arrPos2} state={State} time={Time} />
-            {/* <P5Wrapper style={{ position: 'absolute' }} sketch={cap3} ArrRange={arrRange3} ArrPos={arrPos3} state={State} time={Time} /> */}
+            <P5Wrapper style={{ position: 'absolute' }} sketch={cap1} rangeCH1={rangeCH1} PosCh1={PosCh1}  state={State} time={Time} />
+            <P5Wrapper style={{ position: 'absolute' }} sketch={cap2} rangeCH2={rangeCH2} PosCh2={PosCh2} state={State} time={Time} />
+            <P5Wrapper style={{ position: 'absolute' }} sketch={cap3} rangeCH3={rangeCH3} PosCh3={PosCh3} state={State} time={Time} />
           </div>
 
           <IonRange snaps={true} pin={true} color="warning" value={Time} name="posTime" min={10} max={2048} step={1} onIonChange={updateTime} />
@@ -114,21 +107,21 @@ const VibroMeter = () => {
                 <IonSelect
                   interface="popover"
                   className="button select"
-                  value={arrRange.rangeCH1}
+                  value={rangeCH1}
                   name="rangeCH1"
                   placeholder="+5v"
                   onIonChange={updateRangeChanged}
                 >
                   <IonSelectOption value="x">+ 10v</IonSelectOption>
                   <IonSelectOption value="w">+ 5v</IonSelectOption>
-                  <IonSelectOption value="z">+ 1v</IonSelectOption>
-                  <IonSelectOption value="y">+ 0.5v</IonSelectOption>
+                  <IonSelectOption value="y">+ 1v</IonSelectOption>
+                  <IonSelectOption value="z">+ 0.5v</IonSelectOption>
                 </IonSelect>
               </IonItem>
               <IonItem lines="none" color="transparent">
                 <IonRange
                   color="warning"
-                  value={arrPos.posCH1}
+                  value={PosCh1}
                   name="posCH1"
                   min={-5.0}
                   max={5.0}
@@ -148,13 +141,13 @@ const VibroMeter = () => {
                 <IonSelect
                   interface="popover"
                   className="button select"
-                  value={arrRange2.rangeCH2}
+                  value={rangeCH2}
                   name="rangeCH2"
                   placeholder="+5v"
                   onIonChange={updateRangeChanged2}
                 >
-                  <IonSelectOption value="X">+ 5v</IonSelectOption>
-                  <IonSelectOption value="W">+ 2v</IonSelectOption>
+                  <IonSelectOption value="X">+ 10v</IonSelectOption>
+                  <IonSelectOption value="W">+ 5v</IonSelectOption>
                   <IonSelectOption value="Z">+ 1v</IonSelectOption>
                   <IonSelectOption value="Y">+ 0.5v</IonSelectOption>
                 </IonSelect>
@@ -162,7 +155,7 @@ const VibroMeter = () => {
               <IonItem lines="none" color="transparent">
                 <IonRange
                   color="danger"
-                  value={arrPos2.posCH2}
+                  value={PosCh2}
                   name="posCH2"
                   min={-5.0}
                   max={5.0}
@@ -182,13 +175,13 @@ const VibroMeter = () => {
                 <IonSelect
                   interface="popover"
                   className="button select"
-                  value={arrRange.rangeCH3}
+                  value={rangeCH3}
                   name="rangeCH3"
                   placeholder="+5v"
-                  onIonChange={updateRangeChanged}
+                  onIonChange={updateRangeChanged3}
                 >
-                  <IonSelectOption value="X">+ 5v</IonSelectOption>
-                  <IonSelectOption value="W">+ 2v</IonSelectOption>
+                  <IonSelectOption value="X">+ 10v</IonSelectOption>
+                  <IonSelectOption value="W">+ 5v</IonSelectOption>
                   <IonSelectOption value="Z">+ 1v</IonSelectOption>
                   <IonSelectOption value="Y">+ 0.5v</IonSelectOption>
                 </IonSelect>
@@ -196,12 +189,12 @@ const VibroMeter = () => {
               <IonItem lines="none" color="transparent">
                 <IonRange
                   color="success"
-                  value={arrPos.posCH3}
+                  value={PosCh3}
                   name=" "
                   min={-5.0}
                   max={5.0}
                   step={1}
-                  onIonChange={updatePosistionChanged}
+                  onIonChange={updatePosistionChanged3}
                 />
               </IonItem>
             </div>

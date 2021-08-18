@@ -29,7 +29,7 @@ const cap2 = p => {
         p.clear();
 
         p.strokeWeight(3);
-        p.stroke('red');
+        p.stroke('#eb445a');
         p.noFill();
 
         p.beginShape();
@@ -44,11 +44,10 @@ const cap2 = p => {
             samplesCap2 = [];
         }
     }
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ ArrRange, ArrPos, state, time }) => {
-        if (ArrPos.posCH2) verticalPosCH1 = ArrPos.posCH2;
-        // if (ArrRange.rangeCH2) AmpCH1 = ArrRange.rangeCH2;
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ rangeCH2, PosCh2, state, time }) => {
+        if (PosCh2) verticalPosCH1 = PosCh2;
         State = state;
-        // if (State == "STOP") samplesCap2 = [];
+        if (State == "STOP") samplesCap2 = [];
         bufferSize = time;
     }
 };

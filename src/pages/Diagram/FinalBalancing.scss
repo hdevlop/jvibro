@@ -14,16 +14,6 @@ ion-img {
 
 .polarGraph {
 
-    #defaultCanvas0 {
-        width: 510 !important;
-        height: 510 !important;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1;
-    }
-
     width: 510px;
     height: 510px;
     position: absolute;
@@ -92,6 +82,16 @@ ion-img {
         .led-release {
             background-image: radial-gradient(farthest-corner at 50% 20%, #5f0303 0%, #330000 100%);
             box-shadow: 0 0.5em 1em rgba(102, 0, 0, 0.3);
+        }
+
+        #defaultCanvas0 {
+            width: 510px !important;
+            height: 510px !important;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
         }
     }
 
@@ -233,6 +233,35 @@ ion-img {
             background-image: radial-gradient(farthest-corner at 50% 20%, #5f0303 0%, #330000 100%);
             box-shadow: 0 0.5em 1em rgba(102, 0, 0, 0.3);
         }
+
+        .polarGraphB {
+
+            width: 510px;
+            height: 510px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+
+            img {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                margin: auto;
+                z-index: -10;
+            }
+
+            #defaultCanvas1 {
+                width: 510px !important;
+                height: 510px !important;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 1;
+            }
+
+        }
     }
 }
 
@@ -260,12 +289,12 @@ ion-img {
             font-family: "7seg";
         }
 
-        #defaultCanvas1 {
-            width: 50% !important;
-            height: 100% !important;
+        #defaultCanvas2 {
+            width: 254px !important;
+            height: 206px !important;
             position: absolute;
-            right: 1%;
-            bottom: 1%;
+            right: 1px;
+            bottom: 1px;
             z-index: 1;
         }
     }
@@ -300,6 +329,15 @@ ion-img {
             font-weight: 30px;
             font-size: 70px;
             font-family: "7seg";
+        }
+
+        #defaultCanvas3 {
+            width: 254px !important;
+            height: 206px !important;
+            position: absolute;
+            right: 1px;
+            // bottom: 1px;
+            z-index: 1;
         }
     }
 }

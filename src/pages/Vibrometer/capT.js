@@ -5,7 +5,7 @@ var samplesCap3 = [];
 var Width = 1040;
 var Height = 800;
 let verticalPosCH3 = 0;
-let AmpCH3 = 5;
+let AmpCH3 = 10;
 let bufferSize = 200;
 var Amp = 0;
 var State = false;
@@ -29,7 +29,7 @@ const capT = p => {
         p.clear();
 
         p.strokeWeight(3);
-        p.stroke('red');
+        p.stroke('#2fdf75');
         p.noFill();
 
         p.beginShape();
@@ -44,11 +44,10 @@ const capT = p => {
             samplesCap3 = [];
         }
     }
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ ArrRange, ArrPos, state, time }) => {
-        if (ArrPos.posCH3) verticalPosCH3 = ArrPos.posCH3;
-        // if (ArrRange.rangeCH2) AmpCH1 = ArrRange.rangeCH2;
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ rangeCH3, PosCh3, state, time }) => {
+        if (PosCh3) verticalPosCH3 = PosCh3;
         State = state;
-        // if (State == "STOP") samplesCap2 = [];
+        if (State == "STOP") samplesCap3 = [];
         bufferSize = time;
     }
 };
