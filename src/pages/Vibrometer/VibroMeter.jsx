@@ -27,12 +27,12 @@ const VibroMeter = () => {
   const [checkCap3, setCheckCap3] = useState(false);
 
   const updateRangeChanged = (e) => {
-    setRangeCH1( e.target.value );
+    setRangeCH1(e.target.value);
     ipcRenderer.send('byte', e.target.value);
   };
 
   const updatePosistionChanged = (e) => {
-    setPosCh1(e.target.value );
+    setPosCh1(e.target.value);
   };
 
   const updateRangeChanged2 = (e) => {
@@ -57,9 +57,10 @@ const VibroMeter = () => {
     setTime(e.target.value);
   };
 
-  const STATE = async(e) => {
+  const STATE = async (e) => {
     let state = e.target.innerText;
     setState(state);
+    if (state == "START") ipcRenderer.send('byte',"o")
     ipcRenderer.send('byte', e.target.getAttribute('value'));
     ipcRenderer.send('byte', e.target.getAttribute('value'));
   }
@@ -68,17 +69,8 @@ const VibroMeter = () => {
     ipcRenderer.send('byte', "o\n");
     ipcRenderer.send('byte', "S\n");
   });
-
-  useEffect(() => {
-    
-    async function selectChannel() {
-
-    }
-
-    selectChannel();
-
-  }, [checkCap1, checkCap2, checkCap3])
-
+  //=======================================================================================================================================================//
+  //=======================================================================================================================================================//
   return (
     <IonPage>
       <IonContent fullscreen>
@@ -86,9 +78,9 @@ const VibroMeter = () => {
         <div className="backgroundRealTime">
           <div className="oscillo">
             <P5Wrapper style={{ position: 'absolute' }} sketch={oscilloBack} />
-            <P5Wrapper style={{ position: 'absolute' }} sketch={cap1} rangeCH1={rangeCH1} PosCh1={PosCh1}  state={State} time={Time} />
-            <P5Wrapper style={{ position: 'absolute' }} sketch={cap2} rangeCH2={rangeCH2} PosCh2={PosCh2} state={State} time={Time} />
-            <P5Wrapper style={{ position: 'absolute' }} sketch={cap3} rangeCH3={rangeCH3} PosCh3={PosCh3} state={State} time={Time} />
+            <P5Wrapper style={{ position: 'absolute' }} sketch={cap1} rangeCH1={rangeCH1} PosCh1={PosCh1} state={State} time={Time} check={checkCap1} />
+            <P5Wrapper style={{ position: 'absolute' }} sketch={cap2} rangeCH2={rangeCH2} PosCh2={PosCh2} state={State} time={Time} check={checkCap2} />
+            <P5Wrapper style={{ position: 'absolute' }} sketch={cap3} rangeCH3={rangeCH3} PosCh3={PosCh3} state={State} time={Time} check={checkCap3} />
           </div>
 
           <IonRange snaps={true} pin={true} color="warning" value={Time} name="posTime" min={10} max={2048} step={1} onIonChange={updateTime} />
@@ -100,7 +92,7 @@ const VibroMeter = () => {
             <div className="ch">
               <IonItem lines="none" color="transparent">
                 <IonLabel color="warning">CH 1</IonLabel>
-                <IonToggle checked={checkCap1} color="warning" onIonChange={e => setCheckCap1(e.detail.checked)}/>
+                <IonToggle checked={checkCap1} color="warning" onIonChange={e => setCheckCap1(e.detail.checked)} />
               </IonItem>
 
               <IonItem lines="none" color="transparent">
@@ -134,7 +126,7 @@ const VibroMeter = () => {
             <div className="ch">
               <IonItem lines="none" color="transparent">
                 <IonLabel color="danger">CH 2</IonLabel>
-                <IonToggle checked={checkCap2}  color="danger" onIonChange={e => setCheckCap2(e.detail.checked)}/>
+                <IonToggle checked={checkCap2} color="danger" onIonChange={e => setCheckCap2(e.detail.checked)} />
               </IonItem>
 
               <IonItem lines="none" color="transparent">
@@ -168,7 +160,7 @@ const VibroMeter = () => {
             <div className="ch">
               <IonItem lines="none" color="transparent">
                 <IonLabel color="success">CH 3</IonLabel>
-                <IonToggle checked={checkCap3}  color="success" onIonChange={e => setCheckCap3(e.detail.checked)} />
+                <IonToggle checked={checkCap3} color="success" onIonChange={e => setCheckCap3(e.detail.checked)} />
               </IonItem>
 
               <IonItem lines="none" color="transparent">

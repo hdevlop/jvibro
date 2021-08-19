@@ -9,10 +9,10 @@ let AmpCH1 = 5;
 let bufferSize = 200;
 var Amp = 0;
 var State = false;
-
+var Check ;
 ipcRenderer.on('cap2', (event, c2) => {
 
-    if (State == "START") samplesCap2.push(c2);
+    if (State == "START" && Check) samplesCap2.push(c2);
 
 });
 
@@ -44,11 +44,12 @@ const cap2 = p => {
             samplesCap2 = [];
         }
     }
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ rangeCH2, PosCh2, state, time }) => {
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ rangeCH2, PosCh2, state, time,check }) => {
         if (PosCh2) verticalPosCH1 = PosCh2;
         State = state;
-        if (State == "STOP") samplesCap2 = [];
+        if (State == "STOP" || !check) samplesCap2 = [];
         bufferSize = time;
+        Check = check;
     }
 };
 

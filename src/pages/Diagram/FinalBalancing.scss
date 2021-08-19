@@ -84,6 +84,16 @@ ion-img {
             box-shadow: 0 0.5em 1em rgba(102, 0, 0, 0.3);
         }
 
+        canvas {
+            width: 510px !important;
+            height: 510px !important;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
         #defaultCanvas0 {
             width: 510px !important;
             height: 510px !important;
@@ -251,6 +261,16 @@ ion-img {
                 z-index: -10;
             }
 
+            canvas {
+                width: 510px !important;
+                height: 510px !important;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 1;
+            }
+
             #defaultCanvas1 {
                 width: 510px !important;
                 height: 510px !important;
@@ -287,6 +307,15 @@ ion-img {
             font-weight: 30px;
             font-size: 70px;
             font-family: "7seg";
+        }
+
+        canvas {
+            width: 254px !important;
+            height: 206px !important;
+            position: absolute;
+            right: 1px;
+            bottom: 1px;
+            z-index: 1;
         }
 
         #defaultCanvas2 {
@@ -331,12 +360,19 @@ ion-img {
             font-family: "7seg";
         }
 
+        canvas {
+            width: 254px !important;
+            height: 206px !important;
+            position: absolute;
+            right: 1px;
+            z-index: 1;
+        }
+
         #defaultCanvas3 {
             width: 254px !important;
             height: 206px !important;
             position: absolute;
             right: 1px;
-            // bottom: 1px;
             z-index: 1;
         }
     }

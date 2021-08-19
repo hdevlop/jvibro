@@ -7,12 +7,12 @@ var Height = 800;
 let verticalPosCH3 = 0;
 let AmpCH3 = 10;
 let bufferSize = 200;
-var Amp = 0;
+var Check ,Amp;
 var State = false;
 
 ipcRenderer.on('capT', (event, c2) => {
 
-    if (State == "START") samplesCap3.push(c2);
+    if (State == "START" && Check) samplesCap3.push(c2);
 
 });
 
@@ -44,11 +44,12 @@ const capT = p => {
             samplesCap3 = [];
         }
     }
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ rangeCH3, PosCh3, state, time }) => {
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ rangeCH3, PosCh3, state, time ,check}) => {
         if (PosCh3) verticalPosCH3 = PosCh3;
         State = state;
-        if (State == "STOP") samplesCap3 = [];
+        if (State == "STOP" || !check) samplesCap3 = [];
         bufferSize = time;
+        Check = check;
     }
 };
 

@@ -49,7 +49,7 @@ ipcRenderer.on('bal2', (event, arg) => {
 });
 
 const recv = (Amp, Ang) => {
-    Amp = (Amp / Divider).toFixed(2);
+    Amp = (Amp / Divider).toFixed(0);
     AmpArray.push(Amp);
     AngArray.push(Ang);
     count += 1;
@@ -74,6 +74,7 @@ const Aver = (A, G) => {
         var avg = total / arr.length;
         if (unit == "mV") avg = avg.toFixed(0)
         if (unit == "mils") avg = avg.toFixed(2);
+        if (unit == "um") avg = avg.toFixed(0);
         return avg
     }
 

@@ -70,8 +70,8 @@ const App = () => {
       ls.set("calibration", Data);
       ls.set("useCalib", true);
       ls.set("AVG", 5);
-      ls.set("unit", "mils");
-      ls.set("Divider", 1);
+      ls.set("unit", "um");
+      ls.set("Divider", 2);
     }
   });
 

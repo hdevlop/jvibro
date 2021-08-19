@@ -20,7 +20,13 @@ const Home = () => {
 
     useIonViewWillEnter(() => {
         let stored = ls.get('calibration');
-        if (stored == null) ls.set("calibration", Data);
+        if (stored == null) {
+            ls.set("calibration", Data);
+            ls.set("useCalib", true);
+            ls.set("AVG", 5);
+            ls.set("unit", "um");
+            ls.set("Divider", 2);
+        }
     });
 
     const [A, setA] = useState();
