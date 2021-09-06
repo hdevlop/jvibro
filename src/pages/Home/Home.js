@@ -9,7 +9,7 @@ import * as ls from "local-storage";
 const Home = () => {
 
     const Data = {
-        "angle_left": 1,
+        "angle_left": 0,
         "Weight_left": 0,
         "Radius_left": 0,
 
@@ -22,10 +22,12 @@ const Home = () => {
         let stored = ls.get('calibration');
         if (stored == null) {
             ls.set("calibration", Data);
-            ls.set("useCalib", true);
+            ls.set("useCalib", false);
             ls.set("AVG", 5);
             ls.set("unit", "um");
             ls.set("Divider", 2);
+            ls.set("multiplierA", 1);
+            ls.set("multiplierB", 1);
         }
     });
 

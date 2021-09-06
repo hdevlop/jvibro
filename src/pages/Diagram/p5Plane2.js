@@ -31,20 +31,18 @@ var angScreen = 0
 var magScreen = 0
 
 var Range = 10;
-
+var mup = 1;
 var AVG = ls.get('AVG');
 var unit = ls.get('unit');
 var Divider = ls.get('Divider');
 var data = ls.get('calibration');
 var showResult = false;
-
+var multiplier = ls.get('multiplierB');
 //=========================================================================//
 //=========================================================================//
-ipcRenderer.on('bal2', (event, arg) => {
-    if (START){
-        var data = arg.split(',');
-        recv(data[1], data[2] * CW);
-
+ipcRenderer.on('Bal2', (event, Mag1, Phs1) => {
+    if (START) {
+        recv(Mag1 *mup, Phs1 * CW);
     }
 });
 
@@ -53,7 +51,8 @@ const recv = (Amp, Ang) => {
     AmpArray.push(Amp);
     AngArray.push(Ang);
     count += 1;
-    if (count > AVG) {
+    if (count >= AVG) {
+        AmpArray.splice(0, 1);
         count = 0;
         Aver(AmpArray, AngArray);
         AmpArray = [];
@@ -62,6 +61,15 @@ const recv = (Amp, Ang) => {
     if (count < AVG && count > 0) {
         angScreen = Ang;
         magScreen = Amp;
+
+        if (StateRun == "FirstRun_b2") {
+            Mag_O = Amp
+            ang_O = Ang
+        }
+        if (StateRun == "TrialRun_b2") {
+            Mag_OT = Amp
+            ang_OT = Ang
+        }
     }
 }
 
@@ -81,7 +89,6 @@ const Aver = (A, G) => {
     if (StateRun == "FirstRun_b2") {
         Mag_O = Averaging(A);
         ang_O = Averaging(G);
-
         angScreen = ang_O;
         magScreen = Mag_O;
         showResult = false;
@@ -90,17 +97,7 @@ const Aver = (A, G) => {
     if (StateRun == "TrialRun_b2") {
         Mag_OT = Averaging(A);
         ang_OT = Averaging(G);
-
         showResult = true;
-    }
-
-    if (StateRun == "LastRun_b2") {
-        showResult = false;
-        Mag_O = Averaging(A);
-        ang_O = Averaging(G);
-
-        angScreen = ang_O;
-        magScreen = Mag_O;
     }
 
 }
@@ -123,6 +120,7 @@ const P5Plane2 = p => {
         Divider = ls.get('Divider');
         unit = ls.get('unit');
         data = ls.get('calibration');
+        multiplier = ls.get('multiplierB');
 
         if (data) {
             ang_TW = data.angle_left;
@@ -187,10 +185,25 @@ const P5Plane2 = p => {
     p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Start, range, set1 }) => {
         StateRun = State;
         START = Start;
-        Range = parseFloat(range);
         if (set1) {
             angScreen = 0;
             magScreen = 0;
+        }
+        if (range == "A") {
+            Range = 8000;
+            mup = 5.1;
+        }
+        if (range == "B") {
+            Range = 2000;
+            mup = 1;
+        }
+        if (range == "C") {
+            Range = 250;
+            mup = 1 / 6;
+        }
+        if (range == "D") {
+            Range = 25;
+            mup = 1 / 10;
         }
     }
 };

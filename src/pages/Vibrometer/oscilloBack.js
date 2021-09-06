@@ -1,10 +1,32 @@
+import Roboto from './Seven_Seg.ttf'
 var Width = window.screen.width;
 var Height = window.screen.height - 100;
 var tela;
+var freq = 0;
+var freq_Arr = [];
 
+const { ipcRenderer } = window.require("electron");
+ipcRenderer.on('freq', (event, c1) => {
+    freq_Arr.push(c1*60);
+    if (freq_Arr.length > 200){
+        freq = Averaging(freq_Arr).toFixed(0);
+        freq_Arr = [];
+    }
+})
+
+const Averaging = (arr) => {
+    var total = 0;
+    for (var i = 0; i < arr.length; i++) {
+        total += parseFloat(arr[i], 10);
+    }
+    var avg = total / arr.length;
+    return avg
+}
 
 const oscilloBack = p => {
+    var myFont;
     p.setup = () => {
+        myFont = p.loadFont(Roboto);
         p.createCanvas(Width, Height);
         tela = new Tela(0, 0, Width, Height);
     }
@@ -14,6 +36,12 @@ const oscilloBack = p => {
         p.fill(232, 235, 52);
 
         tela.display();
+        p.fill("white");
+        p.textSize(110);
+        p.textFont(myFont);
+        p.text(freq, 60, 100);
+        p.textSize(50);
+        p.text("rpm", 250, 100);
     }
 
     class Tela {

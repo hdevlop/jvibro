@@ -11,86 +11,72 @@ import * as ls from "local-storage";
 const { remote, ipcRenderer } = window.require("electron");
 const delay = require('delay');
 
-var count = 0;
 const Diagram = () => {
-
-    ipcRenderer.on('freq', (event, arg) => {
-        setRPM(parseInt(arg * 60));
-    });
 
     const options = {
         cssClass: 'hicham'
     };
-
     let currentWindow = remote.getCurrentWindow()
-    const [range, setRange] = useState("10");
+    const [rangeA, setRangeA] = useState(ls.get("multiplierA"));
+    const [rangeB, setRangeB] = useState(ls.get("multiplierB"));
     const [RPM, setRPM] = useState(0);
-
-
     var [Start, setStart] = useState(Start);
     var [Next, setNext] = useState(false);
     var [CountStep, setCountStep] = useState(0);
-    var [State, setState] = useState("");
+    var [StateA, setStateA] = useState("");
+    var [StateB, setStateB] = useState("");
     var [count1, setCount1] = useState(0);
-
     var Msg1 = "Step1: Install standard part, Measure without adding calibration weight";
     var Msg2 = `Step2: In Plan1 Add Trial weight of ${ls.get('calibration').Weight_left} gr Run At ${ls.get('calibration').angle_left} Deg `;
     var Msg3 = `Step3: In Plan2 Add Trial weight of ${ls.get('calibration').Weight_right} gr Run At ${ls.get('calibration').angle_right} Deg `;
-
     var [showModal, setShowModal] = useState(false);
     var [ModalAverage, setModalAverage] = useState(false);
     var [ModalCalib, setModalCalib] = useState(false);
-
     var [MsgModal, setMsgModal] = useState(Msg1);
-
-    var [add, setadd] = useState(ls.get('add'));
-    var [init, setInit] = useState(ls.get('init'));
     var [average, setAverage] = useState(ls.get('AVG'));
     var [selected, setSelected] = useState(ls.get('plane'));
     var [useCalib, setUseCalib] = useState(ls.get('useCalib'));
+    var [Led1_b1, setLed1_b1] = useState(false);
+    var [Led1_b2, setLed1_b2] = useState(false);
+    var [Led2_b1, setLed2_b1] = useState(false);
+    var [Led2_b2, setLed2_b2] = useState(false);
 
-    var [Leds, setLeds] = useState({});
 
     useIonViewWillEnter(() => {
-        setCountStep(init);
-        if (selected == "P2") {
-            ipcRenderer.send('byte', "B");
-            setState("FirstRun_b2");
-        }
-        else {
-            ipcRenderer.send('byte', "b");
-            setState("FirstRun_b1");
-        }
-
         setAverage(ls.get('AVG'));
         setUseCalib(ls.get('useCalib'));
+        setRangeA(ls.get("multiplierA"));
+        setRangeB(ls.get("multiplierB"));
 
         if (CountStep == 0) {
             setMsgModal(Msg1);
             setShowModal(true)
         }
+
+            ipcRenderer.on('Freq', (event, arg) => {
+        setRPM(parseInt(arg * 60));
+    });
     });
 
     //=======================================================================//
     //============================ Blancing Step ============================//
-    const EStart = () => {
+    const EStart = async() => {
         setNext(false)
         ipcRenderer.send('byte', "S");
         ipcRenderer.send('byte', "S");
-        ipcRenderer.removeAllListeners('bal');
+        ipcRenderer.removeAllListeners('Bal');
         setStart(true);
         setModalCalib(useCalib);
         sendBytesStart();
 
         if (CountStep == 0) {
-            StateGest("b", "FirstRun_b1", "Led1_b1");
+            setStateA("FirstRun_b1");
+            setStateB("FirstRun_b2");
+            setLed1_b1(true);
+            setLed1_b2(true);
         }
 
-        if (CountStep == 1) {
-            StateGest("B", "FirstRun_b2", "Led1_b2");
-        }
-
-        ipcRenderer.on('bal', (event, arg) => {
+        ipcRenderer.on('Bal', (event, arg) => {
             setModalCalib(false)
             setModalAverage(true);
             setCount1(count1 += 1);
@@ -100,76 +86,46 @@ const Diagram = () => {
                 setStart(false);
                 ipcRenderer.send('byte', "S");
                 ipcRenderer.send('byte', "S");
-                ipcRenderer.removeAllListeners('bal');
+                ipcRenderer.removeAllListeners('Bal');
             }
         })
+    }
+    //=============================== Next State ===============================//
+    //==========================================================================//
+    const ENext = async () => {
+        setNext(true);
+        setCountStep(CountStep += 1);
+        setCount1(0);
+        if (CountStep == 0) {
+            setStateA("FirstRun_b1");
+            setStateB("FirstRun_b2");
+            setLed1_b1(true);
+            setLed1_b2(true);
+        }
+
+        if (CountStep == 1) {
+            setStateA("TrialRun_b1");
+            setStateB("TrialRun_b2");
+            setLed2_b1(true);
+            setLed2_b2(true);
+
+            setMsgModal(Msg2);
+            setShowModal(true);
+        }
+        if (CountStep > 1) currentWindow.reload();
     }
     //=============================== send Byte ================================//
     //==========================================================================//
     const sendBytesStart = async() => {
-        if (useCalib) {
-            await ipcRenderer.send('byte', 'c');
-            await delay(3000);
-            await ipcRenderer.send('byte', "s");
-
-            ipcRenderer.on('calib', async (event, arg) => {
-                ipcRenderer.removeAllListeners('calib');
-                ipcRenderer.send('byte', "S");
-                ipcRenderer.send('byte', "S");
-                await delay(100);
-                await ipcRenderer.send('byte', "d");
-                await delay(3000);
-                await ipcRenderer.send('byte', "s");
-                setModalCalib(false)
-            })
-        }
-
-        else {
-            await ipcRenderer.send('byte', "d");
-            await delay(100);
-            await ipcRenderer.send('byte', "s");
-        }
+        await ipcRenderer.send('byte', "g");
+        await delay(100);
+        await ipcRenderer.send('byte', "s");
     }
+
 
     //=============================== Next State ===============================//
     //==========================================================================//
-    const ENext = () => {
-        setNext(true);
-        setCountStep(CountStep += add);
-        setCount1(0);
-        if (CountStep == 0) {
-            StateGest("b","FirstRun_b1", "Led1_b1");
-        }
-        if (CountStep == 1) {
-            StateGest("B","FirstRun_b2", "Led1_b2");
-        }
-        if (CountStep == 2) {
-            StateGest("b","TrialRun_b1", "Led2_b1");
-            setMsgModal(Msg2);
-            setShowModal(true);
-        }
-        if (CountStep == 3) {
-            StateGest("B","TrialRun_b2", "Led2_b2");
-            setMsgModal(Msg3);
-            setShowModal(true);
-        }
-        if (CountStep == 4) {
-            StateGest("b","LastRun_b1", "Led3_b1");
-        }
-        if (CountStep == 5) {
-            StateGest("B","LastRun_b2", "Led3_b2");
-        }
-        if (CountStep > 5) currentWindow.reload();
-    }
-
-    const StateGest = async (bytes,state, leds) => {
-        setLeds({ ...Leds, [leds]: true });
-        setState(state);
-        await ipcRenderer.send('byte', bytes);
-    }
-
     useIonViewDidLeave(() => {
-        setCountStep(0);
         ipcRenderer.send('byte', "S");
         setStart(false);
     });
@@ -178,25 +134,28 @@ const Diagram = () => {
         setSelected(e);
         ls.set('plane', e);
         if (e == 'dual') {
-            ls.set('add', 1);
-            ls.set('init', 0);
-            setadd(1);
-            setInit(0);
+
         }
         if (e == 'P1') {
-            setadd(2);
-            setInit(0);
-            ls.set('add', 2);
-            ls.set('init', 0);
+
         }
         if (e == 'P2') {
-            setadd(2);
-            setInit(1);
-            ls.set('add', 2);
-            ls.set('init', 1);
+
         }
         currentWindow.reload()
     }
+
+    const updateRangeChanged = (e) => {
+        setRangeA(e.target.value);
+        ipcRenderer.send('byte', e.target.value);
+        ls.set("multiplierA", e.target.value);
+    };
+
+    const updateRangeChanged2 = (e) => {
+        setRangeB(e.target.value);
+        ipcRenderer.send('byte', e.target.value);
+        ls.set("multiplierB", e.target.value);
+    };
 
     //======================================================================//
     //======================================================================//
@@ -232,23 +191,18 @@ const Diagram = () => {
 
                             <div className="content">
                                 <IonLabel color="success">S1</IonLabel>
-                                <div className={`led led-${Leds.Led1_b1 ? "active" : "release"}`}></div>
+                                <div className={`led led-${Led1_b1 ? "active" : "release"}`}></div>
                             </div>
  
                             <div className="content">
                                 <IonLabel color="success">S2</IonLabel>
-                                <div className={`led led-${Leds.Led2_b1 ? "active" : "release"}`}></div>
-                            </div>
-
-                            <div className="content">
-                                <IonLabel color="success">S3</IonLabel>
-                                <div className={`led led-${Leds.Led3_b1 ? "active" : "release"}`}></div>
+                                <div className={`led led-${Led2_b1 ? "active" : "release"}`}></div>
                             </div>
                         </div>
 
 
                         <div id="polarGraph" className="polarGraph">
-                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} range={range} State={State} Start={Start} set0={Next} />
+                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} range={rangeA} State={StateA} Start={Start} set0={Next} />
                             <img src={polar4} alt="" />
                         </div>
                     </div>
@@ -256,22 +210,28 @@ const Diagram = () => {
 
                     <div className="no">
                         <IonItem lines='none' color="transparent">
-                            <IonLabel color="success">Range</IonLabel>
+                            <IonLabel color="success">Range A</IonLabel>
                         </IonItem>
                         <IonItem lines='none' color="transparent">
-                            <IonSelect interface="popover" interfaceOptions={options} value={range} placeholder="Select One" onIonChange={e => setRange(e.detail.value)}>
-                                <IonSelectOption value="0.5">0.5M</IonSelectOption>
-                                <IonSelectOption value="5">5M</IonSelectOption>
-                                <IonSelectOption value="10">10M</IonSelectOption>
-                                <IonSelectOption value="15">15M</IonSelectOption>
-                                <IonSelectOption value="20">20M</IonSelectOption>
-                                <IonSelectOption value="50">50M</IonSelectOption>
-                                <IonSelectOption value="100">100M</IonSelectOption>
-                                <IonSelectOption value="500">500M</IonSelectOption>
-                                <IonSelectOption value="1000">1000M</IonSelectOption>
-                                <IonSelectOption value="2000">2000M</IonSelectOption>
+                            <IonSelect interface="popover" interfaceOptions={options} value={rangeA} placeholder="Select One" onIonChange={updateRangeChanged}>
+                                <IonSelectOption value={'a'}>8000um</IonSelectOption>
+                                <IonSelectOption value={'b'}>2000um</IonSelectOption>
+                                <IonSelectOption value={'c'}>250um</IonSelectOption>
+                                <IonSelectOption value={'d'}>25um</IonSelectOption>
                             </IonSelect>
                         </IonItem>
+                        <IonItem lines='none' color="transparent">
+                            <IonLabel color="success">Range B</IonLabel>
+                        </IonItem>
+                        <IonItem lines='none' color="transparent">
+                            <IonSelect interface="popover" interfaceOptions={options} value={rangeB} placeholder="Select One" onIonChange={updateRangeChanged2}>
+                                <IonSelectOption value={'A'}>8000um</IonSelectOption>
+                                <IonSelectOption value={'B'}>2000um</IonSelectOption>
+                                <IonSelectOption value={'C'}>250um</IonSelectOption>
+                                <IonSelectOption value={'D'}>25um</IonSelectOption>
+                            </IonSelect>
+                        </IonItem>
+
                         <IonItem lines='none' color="transparent">
                             <IonButton className={"Start"} expand="round" fill="outline" onClick={EStart} >Start</IonButton>
                         </IonItem>
@@ -310,21 +270,17 @@ const Diagram = () => {
                         <div className="leds">
                             <div className="content">
                                 <IonLabel color="success">S1</IonLabel>
-                                <div className={`led led-${Leds.Led1_b2 ? "active" : "release"}`}></div>
+                                <div className={`led led-${Led1_b2 ? "active" : "release"}`}></div>
                             </div>
 
                             <div className="content">
                                 <IonLabel color="success">S2</IonLabel>
-                                <div className={`led led-${Leds.Led2_b2 ? "active" : "release"}`}></div>
+                                <div className={`led led-${Led2_b2 ? "active" : "release"}`}></div>
                             </div>
 
-                            <div className="content">
-                                <IonLabel color="success">S3</IonLabel>
-                                <div className={`led led-${Leds.Led3_b2 ? "active" : "release"}`}></div>
-                            </div>
                         </div>
                         <div id="polarGraphB" className="polarGraphB">
-                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane2} range={range} State={State} Start={Start} set1={Next} />
+                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane2} range={rangeB} State={StateB} Start={Start} set1={Next} />
                             <img src={polar4} alt="" />
                         </div>
                     </div>

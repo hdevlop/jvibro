@@ -6,13 +6,14 @@ import cap3 from './capT';
 import './VibroMeter.scss';
 import P5Wrapper from 'react-p5-wrapper';
 import { useState, useEffect } from "react";
+import * as ls from "local-storage";
 const { ipcRenderer } = window.require("electron");
 const delay = require('delay');
 
 const VibroMeter = () => {
-  let [rangeCH1, setRangeCH1] = useState("w");
-  let [rangeCH2, setRangeCH2] = useState("W");
-  let [rangeCH3, setRangeCH3] = useState("W");
+  let [rangeCH1, setRangeCH1] = useState(ls.get("multiplierA"));
+  let [rangeCH2, setRangeCH2] = useState(ls.get("multiplierB"));
+  let [rangeCH3, setRangeCH3] = useState(ls.get("multiplierC"));
 
   let [PosCh1, setPosCh1] = useState();
   let [PosCh2, setPosCh2] = useState();
@@ -22,11 +23,12 @@ const VibroMeter = () => {
 
   let [State, setState] = useState("stop");
 
-  const [checkCap1, setCheckCap1] = useState(false);
-  const [checkCap2, setCheckCap2] = useState(false);
-  const [checkCap3, setCheckCap3] = useState(false);
+  const [checkCap1, setCheckCap1] = useState(true);
+  const [checkCap2, setCheckCap2] = useState(true);
+  const [checkCap3, setCheckCap3] = useState(true);
 
   const updateRangeChanged = (e) => {
+    ls.set("multiplierA", e.target.value);
     setRangeCH1(e.target.value);
     ipcRenderer.send('byte', e.target.value);
   };
@@ -36,6 +38,7 @@ const VibroMeter = () => {
   };
 
   const updateRangeChanged2 = (e) => {
+    ls.set("multiplierB", e.target.value);
     setRangeCH2(e.target.value);
     ipcRenderer.send('byte', e.target.value);
   };
@@ -68,6 +71,8 @@ const VibroMeter = () => {
   useIonViewWillEnter(() => {
     ipcRenderer.send('byte', "o\n");
     ipcRenderer.send('byte', "S\n");
+    setRangeCH1(ls.get("multiplierA"));
+    setRangeCH2(ls.get("multiplierB"));
   });
   //=======================================================================================================================================================//
   //=======================================================================================================================================================//
@@ -104,10 +109,10 @@ const VibroMeter = () => {
                   placeholder="+5v"
                   onIonChange={updateRangeChanged}
                 >
-                  <IonSelectOption value="x">+ 10v</IonSelectOption>
-                  <IonSelectOption value="w">+ 5v</IonSelectOption>
-                  <IonSelectOption value="y">+ 1v</IonSelectOption>
-                  <IonSelectOption value="z">+ 0.5v</IonSelectOption>
+                  <IonSelectOption value={'a'}>+ 10v</IonSelectOption>
+                  <IonSelectOption value={'b'}>+ 5v</IonSelectOption>
+                  <IonSelectOption value={'c'}>+ 1v</IonSelectOption>
+                  <IonSelectOption value={'d'}>+ 0.5v</IonSelectOption>
                 </IonSelect>
               </IonItem>
               <IonItem lines="none" color="transparent">
@@ -138,10 +143,10 @@ const VibroMeter = () => {
                   placeholder="+5v"
                   onIonChange={updateRangeChanged2}
                 >
-                  <IonSelectOption value="X">+ 10v</IonSelectOption>
-                  <IonSelectOption value="W">+ 5v</IonSelectOption>
-                  <IonSelectOption value="Z">+ 1v</IonSelectOption>
-                  <IonSelectOption value="Y">+ 0.5v</IonSelectOption>
+                  <IonSelectOption value={'A'}>+ 10v</IonSelectOption>
+                  <IonSelectOption value={'B'}>+ 5v</IonSelectOption>
+                  <IonSelectOption value={'C'}>+ 1v</IonSelectOption>
+                  <IonSelectOption value={'D'}>+ 0.5v</IonSelectOption>
                 </IonSelect>
               </IonItem>
               <IonItem lines="none" color="transparent">

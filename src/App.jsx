@@ -68,10 +68,12 @@ const App = () => {
     let stored = ls.get('calibration');
     if (stored == null) {
       ls.set("calibration", Data);
-      ls.set("useCalib", true);
+      ls.set("useCalib", false);
       ls.set("AVG", 5);
       ls.set("unit", "um");
       ls.set("Divider", 2);
+      ls.set("multiplierA", 1);
+      ls.set("multiplierB", 1);
     }
   });
 
