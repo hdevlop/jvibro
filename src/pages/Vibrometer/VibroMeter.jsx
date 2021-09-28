@@ -8,7 +8,7 @@ import P5Wrapper from 'react-p5-wrapper';
 import { useState, useEffect } from "react";
 import * as ls from "local-storage";
 const { ipcRenderer } = window.require("electron");
-const delay = require('delay');
+
 
 const VibroMeter = () => {
   let [rangeCH1, setRangeCH1] = useState(ls.get("multiplierA"));

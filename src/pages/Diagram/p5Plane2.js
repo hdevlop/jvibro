@@ -37,17 +37,23 @@ var unit = ls.get('unit');
 var Divider = ls.get('Divider');
 var data = ls.get('calibration');
 var showResult = false;
-var multiplier = ls.get('multiplierB');
+var GO = false;
+var Active = false;
+var countNext = 0;
+var ArrMag = [];
+var ArrAng= [];
 //=========================================================================//
 //=========================================================================//
 ipcRenderer.on('Bal2', (event, Mag1, Phs1) => {
-    if (START) {
+    if (START && Active) {
+        unit = "um";
         recv(Mag1 *mup, Phs1 * CW);
     }
 });
 
 const recv = (Amp, Ang) => {
     Amp = (Amp / Divider).toFixed(0);
+    if(Amp<15) {Amp = 0;Ang=0;}
     AmpArray.push(Amp);
     AngArray.push(Ang);
     count += 1;
@@ -67,8 +73,13 @@ const recv = (Amp, Ang) => {
             ang_O = Ang
         }
         if (StateRun == "TrialRun_b2") {
-            Mag_OT = Amp
-            ang_OT = Ang
+            if(GO){
+                Mag_O = Amp;
+                ang_O = Ang;
+            }else{
+                Mag_OT = Amp;
+                ang_OT = Ang;
+            }
         }
     }
 }
@@ -95,8 +106,13 @@ const Aver = (A, G) => {
     }
 
     if (StateRun == "TrialRun_b2") {
-        Mag_OT = Averaging(A);
-        ang_OT = Averaging(G);
+        if(GO){
+            Mag_O = Averaging(A);
+            ang_O = Averaging(G);
+        }else{
+            Mag_OT = Averaging(A);
+            ang_OT = Averaging(G);
+        }
         showResult = true;
     }
 
@@ -113,14 +129,13 @@ const P5Plane2 = p => {
         let X0 = width / 2;
         let Y0 = height / 2 - 1;
         v0 = p.createVector(X0, Y0);
+        unit = ls.get('unit');
     };
 
     p.draw = () => {
         AVG = ls.get('AVG');
         Divider = ls.get('Divider');
-        unit = ls.get('unit');
         data = ls.get('calibration');
-        multiplier = ls.get('multiplierB');
 
         if (data) {
             ang_TW = data.angle_left;
@@ -135,6 +150,7 @@ const P5Plane2 = p => {
         let AngleBetween = p.degrees(V_O.angleBetween(V_T));
         ang_CW = Math.round((AngleBetween + ang_TW));  //(AngleBetween + ang_TW).toFixed(1);
         if (ang_CW > 360) ang_CW = ang_CW - 360;
+        if (ang_CW < 0)   ang_CW = 360 + ang_CW ;
         Mass_CW = ((V_O.mag() / V_T.mag()) * Trial_W).toFixed(1)
 
         drawVec(v0, V_O, "red", ang_O);
@@ -143,7 +159,18 @@ const P5Plane2 = p => {
         if (StateRun == "TrialRun_b2" && START == false && showResult) {
             angScreen = ang_CW * CW;
             magScreen = Mass_CW;
-            unit = "GR"
+            unit = "GR";
+            showResult = false;
+            ArrMag[countNext] = magScreen;
+            ArrAng[countNext] = ang_CW;
+            ls.set("CorrMagP2", ArrMag);
+            ls.set("CorrAngP2", ArrAng);
+        
+        }
+
+        if (Active == false ) {
+            angScreen = 0;
+            magScreen = 0;
         }
 
     };
@@ -182,9 +209,14 @@ const P5Plane2 = p => {
         return (number - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
-    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Start, range, set1 }) => {
+    p.myCustomRedrawAccordingToNewPropsHandler = ({ State, Start, range, set1,go,active,arraycount  }) => {
         StateRun = State;
         START = Start;
+        GO = go;
+        Active = active;
+
+        countNext = arraycount;
+
         if (set1) {
             angScreen = 0;
             magScreen = 0;

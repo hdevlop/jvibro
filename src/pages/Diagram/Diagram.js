@@ -16,6 +16,7 @@ const Diagram = () => {
     const options = {
         cssClass: 'hicham'
     };
+
     let currentWindow = remote.getCurrentWindow()
     const [rangeA, setRangeA] = useState(ls.get("multiplierA"));
     const [rangeB, setRangeB] = useState(ls.get("multiplierB"));
@@ -38,9 +39,20 @@ const Diagram = () => {
     var [useCalib, setUseCalib] = useState(ls.get('useCalib'));
     var [Led1_b1, setLed1_b1] = useState(false);
     var [Led1_b2, setLed1_b2] = useState(false);
+
     var [Led2_b1, setLed2_b1] = useState(false);
     var [Led2_b2, setLed2_b2] = useState(false);
 
+    var [Led3_b1, setLed3_b1] = useState(false);
+
+
+    var [Led3_b2, setLed3_b2] = useState(false);
+    var [GO, setGO] = useState(false);
+
+    var [ActiveP1, setActiveP1] = useState(false);
+    var [ActiveP2, setActiveP2] = useState(false);
+
+    var [ArrayCount, setArrayCount] = useState(0);
 
     useIonViewWillEnter(() => {
         setAverage(ls.get('AVG'));
@@ -48,19 +60,40 @@ const Diagram = () => {
         setRangeA(ls.get("multiplierA"));
         setRangeB(ls.get("multiplierB"));
 
+        ls.set("CorrMagP1", []);
+        ls.set("CorrAngP1", []);
+
+        ls.set("CorrMagP2", []);
+        ls.set("CorrAngP2", []);
+
         if (CountStep == 0) {
             setMsgModal(Msg1);
             setShowModal(true)
         }
 
-            ipcRenderer.on('Freq', (event, arg) => {
-        setRPM(parseInt(arg * 60));
-    });
+        ipcRenderer.on('Freq', (event, arg) => {
+            setRPM(parseInt(arg * 60));
+        });
+
+        let P = ls.get("plane")
+
+        if (P == 'dual') {
+            setActiveP1(true);
+            setActiveP2(true);
+        }
+        if (P == 'P1') {
+            setActiveP1(true);
+            setActiveP2(false);
+        }
+        if (P == 'P2') {
+            setActiveP1(false);
+            setActiveP2(true);
+        }
     });
 
     //=======================================================================//
     //============================ Blancing Step ============================//
-    const EStart = async() => {
+    const EStart = async () => {
         setNext(false)
         ipcRenderer.send('byte', "S");
         ipcRenderer.send('byte', "S");
@@ -101,6 +134,7 @@ const Diagram = () => {
             setStateB("FirstRun_b2");
             setLed1_b1(true);
             setLed1_b2(true);
+            setGO(false);
         }
 
         if (CountStep == 1) {
@@ -108,15 +142,22 @@ const Diagram = () => {
             setStateB("TrialRun_b2");
             setLed2_b1(true);
             setLed2_b2(true);
+            setGO(false);
 
             setMsgModal(Msg2);
             setShowModal(true);
         }
-        if (CountStep > 1) currentWindow.reload();
+        if (CountStep == 2) {
+            setLed3_b1(true);
+            setLed3_b2(true);
+            setGO(true);
+        }
+        if (CountStep >= 2) setArrayCount(ArrayCount + 1);
+        if (CountStep > 4) currentWindow.reload();
     }
     //=============================== send Byte ================================//
     //==========================================================================//
-    const sendBytesStart = async() => {
+    const sendBytesStart = async () => {
         await ipcRenderer.send('byte', "g");
         await delay(100);
         await ipcRenderer.send('byte', "s");
@@ -134,15 +175,17 @@ const Diagram = () => {
         setSelected(e);
         ls.set('plane', e);
         if (e == 'dual') {
-
+            setActiveP1(true);
+            setActiveP2(true);
         }
         if (e == 'P1') {
-
+            setActiveP1(true);
+            setActiveP2(false);
         }
         if (e == 'P2') {
-
+            setActiveP1(false);
+            setActiveP2(true);
         }
-        currentWindow.reload()
     }
 
     const updateRangeChanged = (e) => {
@@ -175,6 +218,7 @@ const Diagram = () => {
                 </div>
             </IonModal>
 
+
             <IonModal isOpen={ModalCalib} onDidDismiss={() => setModalCalib(false)} cssClass='ModalCalib'>
                 <div className="modal">
                     <p>Calibrating Sensor</p>
@@ -186,25 +230,32 @@ const Diagram = () => {
 
                 <div className="sensorProjection">
                     {/* ================================================================== */}
-                    <div className="sensorA">
+                    <div className={`sensorA`} >
                         <div className="leds">
 
                             <div className="content">
                                 <IonLabel color="success">S1</IonLabel>
                                 <div className={`led led-${Led1_b1 ? "active" : "release"}`}></div>
                             </div>
- 
+
                             <div className="content">
                                 <IonLabel color="success">S2</IonLabel>
                                 <div className={`led led-${Led2_b1 ? "active" : "release"}`}></div>
+                            </div>
+
+                            <div className="content">
+                                <IonLabel color="success">S3</IonLabel>
+                                <div className={`led led-${Led3_b1 ? "active" : "release"}`}></div>
                             </div>
                         </div>
 
 
                         <div id="polarGraph" className="polarGraph">
-                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} range={rangeA} State={StateA} Start={Start} set0={Next} />
+                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane1} range={rangeA} State={StateA} Start={Start} set0={Next} go={GO} active={ActiveP1} arraycount={ArrayCount} />
                             <img src={polar4} alt="" />
                         </div>
+
+                        <div className={`${selected == "P2" ? "useless" : ""}`}></div>
                     </div>
                     {/* ================================================================== */}
 
@@ -278,16 +329,23 @@ const Diagram = () => {
                                 <div className={`led led-${Led2_b2 ? "active" : "release"}`}></div>
                             </div>
 
+                            <div className="content">
+                                <IonLabel color="success">S3</IonLabel>
+                                <div className={`led led-${Led3_b2 ? "active" : "release"}`}></div>
+                            </div>
+
                         </div>
                         <div id="polarGraphB" className="polarGraphB">
-                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane2} range={rangeB} State={StateB} Start={Start} set1={Next} />
+                            <P5Wrapper style={{ position: 'absolute' }} sketch={P5Plane2} range={rangeB} State={StateB} Start={Start} set1={Next} go={GO} active={ActiveP2} arraycount={ArrayCount} />
                             <img src={polar4} alt="" />
                         </div>
+                        <div className={`${selected == "P1" ? "useless" : ""}`}></div>
                     </div>
                     {/* ================================================================== */}
                 </div>
                 <div className="result">
                     <div className="resultL">
+                        <div className={`${selected == "P2" ? "useless" : ""}`}></div>
 
                         <P5Wrapper style={{ position: 'absolute' }} sketch={sketch} />
                         <IonCard>
@@ -313,7 +371,9 @@ const Diagram = () => {
                             <IonLabel color="success">{RPM}</IonLabel><br />
                         </IonItem>
                     </div>
+
                     <div className="resultR">
+                        <div className={`${selected == "P1" ? "useless" : ""}`}></div>
                         <P5Wrapper style={{ position: 'absolute' }} sketch={sketch2} />
                         <IonCard>
                             <IonItem lines='none' color="transparent">

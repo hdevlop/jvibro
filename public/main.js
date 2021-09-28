@@ -47,6 +47,7 @@ app.allowRendererProcessReuse = false;
 
 app.on('ready', function () {
   createWindow();
+  ConfigPort("COM2", 115200);
 });
 
 app.on('window-all-closed', function () {
@@ -77,8 +78,7 @@ var Phs2_Arr = [];
 var Buff = 1024;
 var calib = false;
 var diag = false;
-var multiplierA = 1;
-var multiplierB = 1;
+
 
 const ConfigPort = (PortCOM, baudRate) => {
   port = new SerialPort(PortCOM, { autoOpen: true, baudRate: baudRate });
@@ -131,7 +131,7 @@ const recDataOneChannel = (data) => {
         let Phs1 = Averaging(Phs1_Arr).toFixed(0);
         let Phs2 = Averaging(Phs2_Arr).toFixed(0);
 
-        if (Freq < 5) Buff = 1024;
+        Buff = 1024;
         if (Freq <= 5 && Freq < 10) Buff = 512;
         if (Freq <= 10) Buff = 256;
 
@@ -164,7 +164,8 @@ const recDataOneChannel = (data) => {
 
 ipcMain.on('SendToARDConfig', (event, arg) => {
   if (portName != arg.PortCOM) ConfigPort(arg.PortCOM, arg.Baudrate);
-  port.write(`${arg.Baudrate},${arg.Freqency},${arg.RPM},\n`);
+  // port.write(`${arg.Baudrate},${arg.Freqency},${arg.RPM},\n`);
+  port.write(`f\n`);
   port.write(`S\n`);
 })
 

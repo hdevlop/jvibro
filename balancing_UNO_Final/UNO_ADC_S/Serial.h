@@ -37,7 +37,6 @@ void SerialReadString(){
     if(inChar == 'S'){
       ST_SP = false;
       Diagram = false;
-      Calib = false;
     }
 
     if(inChar == 's'){
@@ -47,13 +46,11 @@ void SerialReadString(){
     if(inChar == 'g'){
       Diagram = true;
       Oscillo = false;
-      Calib = false;
     }
 
     if(inChar == 'o'){
        Oscillo = true;
        Diagram = false;
-       Calib = false;
     }
     //=========================================//
     //=========================================//

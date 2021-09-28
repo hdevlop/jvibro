@@ -59,10 +59,6 @@
         justify-content: space-between;
         align-items: center;
 
-        .right {
-            width: 200px;
-            height: 100%;
-        }
 
         .center {
             width: 100%;
@@ -70,12 +66,62 @@
             background-color: #d5d5d5;
             position: relative;
 
+
             .calc {
                 position: absolute;
                 width: 100%;
-                top: 450px;
+                top: 420px;
                 display: flex;
                 justify-content: center;
+
+                ion-select {
+                    color: rgb(38, 38, 38) !important;
+                    font-size: 1.4rem !important;
+                    font-family: 'Roboto Slab',
+                        serif !important;
+                }
+
+                ion-item {
+                    height: 70px;
+                    --background: none;
+                    width: 400px;
+
+                }
+
+                h2 {
+                    width: 95px !important;
+                    font-family: 'Roboto Slab',
+                        serif !important;
+                    color: rgb(48, 48, 48) !important;
+                    font-size: 1.4rem !important;
+                    margin-right: 10px;
+                }
+
+                h3 {
+                    margin-left: 25px;
+                    font-family: 'Roboto Slab',
+                        serif !important;
+                    color: rgb(48, 48, 48) !important;
+                    font-size: 1.4rem !important;
+                }
+
+                ion-input {
+                    margin-left: 10px;
+                    color: rgb(38, 38, 38) !important;
+                    font-size: 1.5rem !important;
+                    font-family: 'Roboto Slab',
+                        serif !important;
+                }
+
+                .boxSelect {
+                    background-color: rgb(220, 221, 221);
+                    border: 5px ridge rgb(192, 192, 192);
+                    width: 150px;
+                    border-radius: 8px !important;
+                    height: 55px;
+
+                }
+
             }
 
             img {
@@ -86,53 +132,17 @@
                 height: 400px;
             }
 
-            ion-item {
-                height: 70px;
-                --background: none;
-                width: 500px;
-
+            .resultCalc {
+                border: solid 2px black;
+                border-radius: 10px;
             }
 
-            h2 {
-                width: 95px !important;
-                font-family: 'Roboto Slab',
-                    serif !important;
-                color: rgb(48, 48, 48) !important;
-                font-size: 1.4rem !important;
+            .ass {
                 margin-right: 10px;
+                display: flex;
+                border: solid 2px black;
+                border-radius: 10px;
             }
-
-            h3 {
-                margin-left: 25px;
-                font-family: 'Roboto Slab',
-                    serif !important;
-                color: rgb(48, 48, 48) !important;
-                font-size: 1.4rem !important;
-            }
-
-            ion-input {
-                margin-left: 10px;
-                color: rgb(38, 38, 38) !important;
-                font-size: 1.5rem !important;
-                font-family: 'Roboto Slab',
-                    serif !important;
-            }
-
-            .boxSelect {
-                background-color: rgb(220, 221, 221);
-                border: 5px ridge rgb(192, 192, 192);
-                width: 240px;
-                border-radius: 8px !important;
-                height: 55px;
-
-            }
-
-
-        }
-
-        .left {
-            width: 200px;
-            height: 100%;
 
         }
     }
